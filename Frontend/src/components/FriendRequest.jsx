@@ -11,7 +11,7 @@ function FriendRequest({ userId, user, socket, onLogout, notification }) {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/users');
+      const response = await axios.get('https://tinder-g832.onrender.com/api/users');
       console.log('API Response:', response.data);
       
       const filteredUsers = response.data.filter((u) => u._id !== userId);
@@ -26,7 +26,7 @@ function FriendRequest({ userId, user, socket, onLogout, notification }) {
 
   const handleSendRequest = async (receiverId) => {
     try {
-      await axios.post('http://localhost:4000/api/friend-requests/send', {
+      await axios.post('https://tinder-g832.onrender.com/api/friend-requests/send', {
         senderId: userId,
         receiverId,
       });
@@ -45,7 +45,7 @@ function FriendRequest({ userId, user, socket, onLogout, notification }) {
 
   const fetchFriendRequestStatus = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/friend-requests/status/${userId}`);
+      const response = await axios.get(`https://tinder-g832.onrender.com/api/friend-requests/status/${userId}`);
       setFriendRequests(response.data);
     } catch (error) {
       console.error('Error fetching request status:', error);
@@ -54,7 +54,7 @@ function FriendRequest({ userId, user, socket, onLogout, notification }) {
 
   const handleAcceptRequest = async (senderId) => {
     try {
-      await axios.post('http://localhost:4000/api/friend-requests/accept', {
+      await axios.post('https://tinder-g832.onrender.com/api/friend-requests/accept', {
         senderId,
         receiverId: userId,
       });
@@ -127,9 +127,3 @@ function FriendRequest({ userId, user, socket, onLogout, notification }) {
 }
 
 export default FriendRequest;
-git init
-git add .
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/miznaansari/Tinder.git
-git push -u origin main

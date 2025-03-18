@@ -13,7 +13,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:4000/api/login', { email, password });
+      const response = await axios.post('https://tinder-g832.onrender.com/api/login', { email, password });
       const loggedInUser = response.data.user;
 
       setUser(loggedInUser);
