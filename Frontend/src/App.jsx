@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
-import axios from 'axios';
+
 import Login from './components/Login';
 import FriendRequest from './components/FriendRequest';
 
