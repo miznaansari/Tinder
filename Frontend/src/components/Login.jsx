@@ -6,14 +6,17 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
+    setLoading(true);
 
     if (!email || !password) {
       setErrorMessage('Please enter both email and password');
+      setLoading(false);
       return;
     }
 
@@ -34,11 +37,13 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       setSuccessMessage('Login successful!');
     } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex  flex-col justify-center px-6 py-12 lg:px-8 bg-gray-100">
+    <div className="flex flex-col justify-center px-6 py-12 lg:px-8 bg-gray-100">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold text-gray-900">Sign in to your account</h2>
       </div>
@@ -81,16 +86,11 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
           </div>
 
           <div>
-            <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus:outline-indigo-600 focus:ring-2 focus:ring-indigo-600">
-              Sign in
+            <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus:outline-indigo-600 focus:ring-2 focus:ring-indigo-600" disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </div>
         </form>
-
-        <p className="mt-10 text-center text-sm text-gray-500">
-         <button  onClick={() => setCurrentPage('signup')}> Signup</button>?
-          <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500"> Start a 14-day free trial</a>
-        </p>
       </div>
     </div>
   );

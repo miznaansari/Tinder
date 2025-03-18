@@ -65,7 +65,6 @@ function App() {
   return (
     <div className="bg-gray-100 flex flex-col items-center min-h-screen">
       <h1 className="text-xl font-bold mt-8">Real-Time Friend Requests with Tinder</h1>
-      {notification && <div className="bg-blue-500 text-white p-3 rounded-md mb-4">{notification}</div>}
       {renderPage()}
       {!isLoggedIn && (
         <div>
