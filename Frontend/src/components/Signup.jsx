@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -95,7 +94,7 @@ const Signup = () => {
         </form>
 
         <p className="mt-8 text-center text-sm text-gray-500">
-          Already have an account? <Link to="/login" className="text-indigo-600 hover:text-indigo-500">Sign in</Link>
+          Already have an account? <button onClick={() => setCurrentPage('login')}  className="text-indigo-600 hover:text-indigo-500">Sign in</button>
         </p>
       </div>
     </div>

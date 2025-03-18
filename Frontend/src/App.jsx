@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './Tinder.css';
 
 import Login from './components/Login';
@@ -12,6 +11,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentPage, setCurrentPage] = useState('login'); // Manage navigation using state
 
   const socket = useRef(null);
 
@@ -24,6 +24,7 @@ function App() {
       setUser(parsedUser);
       setUserId(parsedUser._id);
       setIsLoggedIn(true);
+      setCurrentPage('home'); // Navigate to home
       socket.current.emit('userConnected', parsedUser._id);
     }
 
@@ -43,24 +44,43 @@ function App() {
     setUserId('');
     setIsLoggedIn(false);
     localStorage.removeItem('user');
+    setCurrentPage('login'); // Go back to login after logout
     alert('Logged out successfully!');
   };
 
+  // Navigation using state
+  const renderPage = () => {
+    if (!isLoggedIn) {
+      if (currentPage === 'login') {
+        return <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} setCurrentPage={setCurrentPage} />;
+      }
+      if (currentPage === 'signup') {
+        return <Signup setCurrentPage={setCurrentPage} />;
+      }
+    } else {
+      return <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />;
+    }
+  };
+
   return (
-    <Router>
-      <div className="bg-gray-100 flex flex-col items-center min-h-screen">
-        <h1 className="text-xl font-bold mt-8">Real-Time Friend Requests with Tinder</h1>
-        <Routes>
-          <Route path="/login" element={<Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} />} />
-          <Route path="/signup" element={<Signup />} />
-          {isLoggedIn ? (
-            <Route path="/" element={<TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />} />
+    <div className="bg-gray-100 flex flex-col items-center min-h-screen">
+      <h1 className="text-xl font-bold mt-8">Real-Time Friend Requests with Tinder</h1>
+      {notification && <div className="bg-blue-500 text-white p-3 rounded-md mb-4">{notification}</div>}
+      {renderPage()}
+      {!isLoggedIn && (
+        <div>
+          {currentPage === 'login' ? (
+            <p>
+              Don't have an account? <button onClick={() => setCurrentPage('signup')} className="text-blue-500">Sign Up</button>
+            </p>
           ) : (
-            <Route path="/" element={<Navigate to="/login" />} />
+            <p>
+              Already have an account? <button onClick={() => setCurrentPage('login')} className="text-blue-500">Login</button>
+            </p>
           )}
-        </Routes>
-      </div>
-    </Router>
+        </div>
+      )}
+    </div>
   );
 }
 

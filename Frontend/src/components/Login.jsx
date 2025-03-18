@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
 
 const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,7 +32,6 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       }
 
       setSuccessMessage('Login successful!');
-      navigate('/');
     } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message);
     }
@@ -91,7 +88,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-         <Link to="/signup"> Signup</Link>?
+         <button  onClick={() => setCurrentPage('signup')}> Signup</button>?
           <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500"> Start a 14-day free trial</a>
         </p>
       </div>
