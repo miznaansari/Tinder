@@ -7,7 +7,13 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   const [friendRequests, setFriendRequests] = useState([]);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('');
+  const [swipePosition, setSwipePosition] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [swipeComplete, setSwipeComplete] = useState(false);
+
   const cardRef = useRef(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -42,7 +48,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   };
 
   const handleSwipe = async (direction) => {
-    if (!users[currentIndex]) return; // Prevent errors if user is missing
+    if (!users[currentIndex]) return;
 
     if (direction === 'right') {
       try {
@@ -59,12 +65,21 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
       }
     }
 
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < users.length) {
-      setCurrentIndex(nextIndex);
-    } else {
-      alert('No more users');
-    }
+    // Animate swipe out
+    setSwipePosition(direction === 'right' ? 500 : -500);
+    setSwipeComplete(true);
+
+    setTimeout(() => {
+      setSwipePosition(0);
+      setSwipeComplete(false);
+
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < users.length) {
+        setCurrentIndex(nextIndex);
+      } else {
+        alert('No more users');
+      }
+    }, 300); // 300ms for smooth transition
   };
 
   const handleRequestAction = async (requestId, action) => {
@@ -81,13 +96,39 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   }
 
   const currentUser = users[currentIndex];
-  const existingRequest = currentUser 
+  const existingRequest = currentUser
     ? friendRequests.find((req) => req.receiver?._id === currentUser?._id)
     : null;
 
+  // Handle Swipe on Mobile with Animation
+  const onTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    setIsSwiping(true);
+  };
+
+  const onTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+    const diff = touchEndX.current - touchStartX.current;
+    setSwipePosition(diff);
+  };
+
+  const onTouchEnd = () => {
+    const diff = touchEndX.current - touchStartX.current;
+    if (Math.abs(diff) > 150) {
+      if (diff > 0) {
+        handleSwipe('right');
+      } else {
+        handleSwipe('left');
+      }
+    } else {
+      setSwipePosition(0);
+      setIsSwiping(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 relative">
-      <button onClick={onLogout} className='font-bold'>Logout</button>
+    <div className="flex flex-col items-center justify-center pt-20 bg-gray-100 relative">
+      <button onClick={onLogout} className="font-bold">Logout</button>
 
       {toastMessage && (
         <div className={`absolute top-4 right-4 p-4 rounded-lg text-white shadow-lg ${toastType === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
@@ -99,11 +140,17 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
 
       <div
         ref={cardRef}
-        className="relative w-80 h-96 bg-white shadow-2xl rounded-xl overflow-hidden transform transition-transform"
+        className={`relative w-80 h-96 bg-white shadow-2xl rounded-xl overflow-hidden transition-transform duration-300 ${swipeComplete ? 'opacity-0' : 'opacity-100'} ${isSwiping ? '' : 'transition-all ease-in-out'}`}
+        style={{
+          transform: `translateX(${swipePosition}px) rotate(${swipePosition / 20}deg)`,
+        }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         <img
-          src={currentUser?.profilePicture 
-            ? `https://tinder-g832.onrender.com${currentUser.profilePicture}` 
+          src={currentUser?.profilePicture
+            ? `https://tinder-g832.onrender.com${currentUser.profilePicture}`
             : "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
           alt={currentUser?.name || "Default Avatar"}
           className="w-full h-2/3 object-cover"
@@ -115,17 +162,19 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
         </div>
       </div>
 
-      <div className="absolute bottom-10 flex gap-6">
+      <div className="absolute bottom-5 flex gap-6">
         {existingRequest ? (
           <>
             <button onClick={() => handleRequestAction(existingRequest._id, 'accept')} className="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600">Accept</button>
             <button onClick={() => handleRequestAction(existingRequest._id, 'reject')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">Reject</button>
-            <button onClick={() => handleSwipe('left')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">❌</button>
+            <button onClick={() => handleSwipe('left')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">X</button>
+
           </>
         ) : (
           <>
-            <button onClick={() => handleSwipe('left')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">❌</button>
             <button onClick={() => handleSwipe('right')} className="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600">❤️</button>
+
+            <button onClick={() => handleSwipe('left')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">❌</button>
           </>
         )}
       </div>
