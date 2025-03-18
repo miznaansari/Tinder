@@ -123,4 +123,21 @@ router.post('/send', async (req, res) => {
   res.status(201).json({ message: 'Friend request sent successfully' });
 });
 
+
+
+
+// Fetch friend requests by user _id (either sender or receiver)
+router.get('/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const requests = await FriendRequest.find({
+      $or: [{ sender: userId }, { receiver: userId }]
+    }).populate('sender receiver', 'name email'); // Populate sender and receiver details if needed
+
+    res.status(200).json({ success: true, data: requests });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 module.exports = router;

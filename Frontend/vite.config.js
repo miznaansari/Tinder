@@ -1,14 +1,19 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-
-  server: {
-    host: true,  // Allows access from local network (192.168.x.x)
-    port: 3000,  // Change port if needed
-    open: true,  // Automatically opens in the browser
-    allowedHosts: ['tinder-1-an6v.onrender.com'], // Allow the specified host
+  plugins: [  tailwindcss(),react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
-})
+  server: {
+    host: true,
+    port: 3000,
+    open: true,
+    allowedHosts: ['tinder-1-an6v.onrender.com'],
+  },
+});

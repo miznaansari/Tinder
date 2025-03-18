@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './Tinder.css';
 
 import Login from './components/Login';
-import FriendRequest from './components/FriendRequest';
+import Signup from './components/Signup';
+import TinderPage from './components/TinderPage';
 
 function App() {
   const [userId, setUserId] = useState('');
@@ -10,13 +13,11 @@ function App() {
   const [notification, setNotification] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Use a ref for socket to avoid reinitializing
   const socket = useRef(null);
 
   useEffect(() => {
     socket.current = io('https://tinder-g832.onrender.com');
 
-    // Check for stored user
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
@@ -26,7 +27,6 @@ function App() {
       socket.current.emit('userConnected', parsedUser._id);
     }
 
-    // Listen for notifications
     socket.current.on('friendRequestNotification', (data) => {
       setNotification(data.message);
     });
@@ -47,16 +47,20 @@ function App() {
   };
 
   return (
-    
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-10">
-      <h1 className="text-4xl font-bold mb-10">Real-Time Friend Requests with MongoDB Atlas & Socket.IO</h1>
-
-      {!isLoggedIn ? (
-        <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} />
-      ) : (
-        <FriendRequest userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />
-      )}
-    </div>
+    <Router>
+      <div className="bg-gray-100 flex flex-col items-center min-h-screen">
+        <h1 className="text-xl font-bold mt-8">Real-Time Friend Requests with Tinder</h1>
+        <Routes>
+          <Route path="/login" element={<Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} />} />
+          <Route path="/signup" element={<Signup />} />
+          {isLoggedIn ? (
+            <Route path="/" element={<TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />} />
+          ) : (
+            <Route path="/" element={<Navigate to="/login" />} />
+          )}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

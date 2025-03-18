@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const connectDB = require('./db');
+const path = require('path');
 const { activeUsers } = require('./utils/socketManager');
 
 const app = express();
@@ -35,6 +36,7 @@ io.on('connection', (socket) => {
     });
   });
 });
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api', require('./routers/Createuser'));
 app.use('/api/friend-requests', require('./routers/friendRequestRoutes'));

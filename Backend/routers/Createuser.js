@@ -1,51 +1,69 @@
 const express = require('express');
 const router = express.Router();
 const Users = require('../models/User');
+const multer = require('multer');
 
-
-
+// Configure Multer for image upload
+const storage = multer.diskStorage({
+  destination: './uploads/', // Save images to the 'uploads' folder
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+const upload = multer({ storage });
 
 // Register Route
-router.post('/create', async (req, res) => {
+router.post('/create', upload.single('profilePicture'), async (req, res) => {
+  try {
     const { name, email, password, dob } = req.body;
 
-    let existuser = await Users.findOne({ email });
-
-    if (existuser) {
-        return res.status(400).json({ error: "User Already Exists" });
+    // Check if user already exists
+    const existUser = await Users.findOne({ email });
+    if (existUser) {
+      return res.status(400).json({ error: 'User already exists' });
     }
 
-    const newUser = new Users({ name, email, password, dob });
+    // Store image path if uploaded
+    const profilePicture = req.file ? `/uploads/${req.file.filename}` : null;
+
+    // Create and save new user
+    const newUser = new Users({ name, email, password, dob, profilePicture });
     await newUser.save();
-    
-    res.status(200).json({ success: "Account Created Successfully" });
+
+    res.status(201).json({ success: 'Account created successfully', user: newUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Login Route
 router.post('/login', async (req, res) => {
+  try {
     const { email, password } = req.body;
 
-    let user = await Users.findOne({ email });
-
-    if (!user) {
-        return res.status(400).json({ error: "Invalid Email or Password" });
+    // Check if user exists
+    const user = await Users.findOne({ email });
+    if (!user || user.password !== password) {
+      return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    // Check if password matches
-    if (user.password !== password) {
-        return res.status(400).json({ error: "Invalid Email or Password" });
-    }
-
-
-    res.status(200).json({ success: "Login Successful",user:user});
+    res.status(200).json({ success: 'Login successful', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Get All Users
 router.get('/users', async (req, res) => {
- 
-      const users = await Users.find({});
-      res.json(users);
-   
-  });
+  try {
+    const users = await Users.find({});
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 module.exports = router;
