@@ -42,6 +42,8 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   };
 
   const handleSwipe = async (direction) => {
+    if (!users[currentIndex]) return; // Prevent errors if user is missing
+
     if (direction === 'right') {
       try {
         const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -74,17 +76,18 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
     }
   };
 
-  const currentUser = users[currentIndex];
-  const existingRequest = friendRequests.find((req) => req.receiver._id === currentUser?._id);
-
-  if (!users.length) {
-    return <p className="text-xl font-bold text-gray-600">Loading users...</p>;
+  if (!users.length || !users[currentIndex]) {
+    return <p className="text-xl font-bold text-gray-600">Loading users or no users available</p>;
   }
+
+  const currentUser = users[currentIndex];
+  const existingRequest = currentUser 
+    ? friendRequests.find((req) => req.receiver?._id === currentUser?._id)
+    : null;
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 relative">
-<button onClick={()=>onLogout()} className='font-bold'>Logout</button>
-
+      <button onClick={onLogout} className='font-bold'>Logout</button>
 
       {toastMessage && (
         <div className={`absolute top-4 right-4 p-4 rounded-lg text-white shadow-lg ${toastType === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
@@ -98,13 +101,13 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
         ref={cardRef}
         className="relative w-80 h-96 bg-white shadow-2xl rounded-xl overflow-hidden transform transition-transform"
       >
-      <img
-  src={currentUser?.profilePicture 
-    ? `https://tinder-g832.onrender.com${currentUser.profilePicture}` 
-    : "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
-  alt={currentUser?.name || "Default Avatar"}
-  className="w-full h-2/3 object-cover"
-/>
+        <img
+          src={currentUser?.profilePicture 
+            ? `https://tinder-g832.onrender.com${currentUser.profilePicture}` 
+            : "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
+          alt={currentUser?.name || "Default Avatar"}
+          className="w-full h-2/3 object-cover"
+        />
 
         <div className="p-4">
           <h2 className="text-2xl font-semibold text-gray-800">{currentUser?.name}</h2>
@@ -118,8 +121,6 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
             <button onClick={() => handleRequestAction(existingRequest._id, 'accept')} className="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600">Accept</button>
             <button onClick={() => handleRequestAction(existingRequest._id, 'reject')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">Reject</button>
             <button onClick={() => handleSwipe('left')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">❌</button>
-
-            
           </>
         ) : (
           <>
@@ -128,7 +129,6 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
           </>
         )}
       </div>
-      
     </div>
   );
 };
