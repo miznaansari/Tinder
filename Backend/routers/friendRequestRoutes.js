@@ -1,20 +1,48 @@
 const express = require('express');
 const router = express.Router();
-const FriendRequest = require('../models/FriendRequest');
+const FriendRequest = require('../models/friendRequest');
 const User = require('../models/User');
 const { activeUsers } = require('../utils/socketManager');
 const { io } = require('../server');
 
+
+router.post('/accepted', async (req, res) => {
+  try {
+    const { id } = req.body; // Fixing req.body()
+console.log(id)
+    if (!id) {
+      return res.status(400).json({ success: false, error: 'User ID is required' });
+    }
+
+    const acceptedRequests = await FriendRequest.find({
+      status: 1,
+      $or: [{ sender: id }, { receiver: id }]
+    })
+    .populate('sender receiver', 'name email profilePicture'); // Populating name and email for both sender and receiver
+
+    res.status(200).json({ success: true, data: acceptedRequests });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+
 // Accept Friend Request
 router.post('/accept', async (req, res) => {
-  const { senderId, receiverId } = req.body;
-
+  const { senderId, receiverId ,id} = req.body;
+console.log(id)
   if (!senderId || !receiverId) {
     return res.status(400).json({ error: 'Sender and Receiver IDs are required' });
   }
 
   try {
-    const request = await FriendRequest.findOne({ sender: senderId, receiver: receiverId });
+    const request = await FriendRequest.findOne({
+      $or: [
+        { sender: senderId, receiver: receiverId },
+        { sender: receiverId, receiver: senderId }
+      ]
+    });
+    
 
     if (!request) {
       return res.status(404).json({ error: 'Friend request not found' });

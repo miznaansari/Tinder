@@ -10,6 +10,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   const [swipePosition, setSwipePosition] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const [swipeComplete, setSwipeComplete] = useState(false);
+  const [userdetail, setuser] = useState(localStorage.getItem('user'));
 
   const cardRef = useRef(null);
   const touchStartX = useRef(0);
@@ -84,7 +85,13 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
 
   const handleRequestAction = async (requestId, action) => {
     try {
-      await axios.post(`http://localhost:4000/api/friend-requests/${requestId}/${action}`);
+      console.log(existingRequest.receiver._id ); // Sometimes it could be 'id' instead of '_id'
+
+      await axios.post(`http://localhost:4000/api/friend-requests/${action}`,{
+        id: existingRequest._id,
+        receiverId:existingRequest.receiver._id,
+        senderId:existingRequest.sender._id
+      });
       showToast(`Request ${action}ed successfully`);
     } catch (error) {
       showToast(error.message || 'Error processing request', 'error');
@@ -125,9 +132,10 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
       setIsSwiping(false);
     }
   };
-
+const userdetailname = JSON.parse( userdetail)
   return (
     <div className="flex flex-col items-center justify-center pt-20 bg-gray-100 relative">
+      <h1 className='text-3xl'>{userdetailname.name}</h1>
       <button onClick={onLogout} className="font-bold">Logout</button>
 
       {toastMessage && (
@@ -165,7 +173,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
       <div className="absolute bottom-5 flex gap-6">
         {existingRequest ? (
           <>
-            <button onClick={() => handleRequestAction(existingRequest._id, 'accept')} className="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600">Accept</button>
+            <button onClick={() => handleRequestAction(existingRequest, 'accept')} className="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600">Accept</button>
             <button onClick={() => handleRequestAction(existingRequest._id, 'reject')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">Reject</button>
             <button onClick={() => handleSwipe('left')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">X</button>
 

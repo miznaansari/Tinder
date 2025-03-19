@@ -5,6 +5,8 @@ import './tinder.css';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import TinderPage from './components/TinderPage';
+import Navbar from './components/Navbar';
+import Acceptedfriendlist from './components/Acceptedfriendlist';
 
 function App() {
   const [userId, setUserId] = useState('');
@@ -51,6 +53,9 @@ function App() {
   // Navigation using state
   const renderPage = () => {
     if (!isLoggedIn) {
+      if (currentPage === 'friendlist') {
+        return <Acceptedfriendlist />;
+      }
       if (currentPage === 'login') {
         return <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} setCurrentPage={setCurrentPage} />;
       }
@@ -58,11 +63,18 @@ function App() {
         return <Signup setCurrentPage={setCurrentPage} />;
       }
     } else {
+      if (currentPage === 'friendlist') {
+        return <Acceptedfriendlist />;
+      }
       return <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />;
     }
   };
+  
+  const [friendlist, setfriendlist] = useState(false);
 
   return (
+    <>
+    <Navbar setCurrentPage={setCurrentPage}  />
     <div className="bg-gray-100 flex flex-col items-center min-h-screen">
       <h1 className="text-xl font-bold mt-8">Real-Time Friend Requests with Tinder</h1>
       {renderPage()}
@@ -80,6 +92,7 @@ function App() {
         </div>
       )}
     </div>
+    </>
   );
 }
 
