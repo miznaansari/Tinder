@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import { useLocation } from 'react-router';
 
-const socket = io('https://tinder-1-an6v.onrender.com');
+const socket = io('https://tinder-g832.onrender.com');
 
 const Chat = () => {
   const location = useLocation();
@@ -24,7 +24,7 @@ const Chat = () => {
     socket.emit('userConnected', user._id);
 
     // Fetch previous messages
-    axios.post('https://tinder-1-an6v.onrender.com/api/chat/messages', {
+    axios.post('https://tinder-g832.onrender.com/api/chat/messages', {
       senderId: sender._id,
       receiverId: receiver._id,
     })
@@ -65,7 +65,7 @@ const Chat = () => {
     };
 
     try {
-      await axios.post('https://tinder-1-an6v.onrender.com/api/chat/send', newMessage);
+      await axios.post('https://tinder-g832.onrender.com/api/chat/send', newMessage);
       socket.emit('sendMessage', newMessage);
       setMessages((prev) => [...prev, newMessage]);
       setMessage('');
