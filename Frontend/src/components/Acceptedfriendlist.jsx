@@ -1,36 +1,48 @@
-import axios from 'axios';
-import { parseJSON } from 'date-fns';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate,useLocation } from 'react-router';
 
 const Acceptedfriendlist = () => {
   const [friends, setFriends] = useState([]);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchFriends = async () => {
-        try {
-          const user = JSON.parse(localStorage.getItem('user'));
-          console.log(user._id);
-      
-          const response = await axios.post('http://localhost:4000/api/friend-requests/accepted', { id: user._id });
-      
-          if (response.data.success) {
-            setFriends(response.data.data);
-          } else {
-            console.error('Failed to fetch friends:', response.data.message);
-          }
-        } catch (error) {
-          console.error('Error fetching friends:', error);
+        
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await axios.post('http://localhost:4000/api/friend-requests/accepted', { id: user._id });
+
+        if (response.data.success) {
+          setFriends(response.data.data);
+        } else {
+          console.error('Failed to fetch friends:', response.data.message);
         }
-      };
-      
+      } catch (error) {
+        console.error('Error fetching friends:', error);
+      }
+    };
 
     fetchFriends();
   }, []);
 
+  const handlechat = (friend) => {
+    console.log(friend)
+    const user = JSON.parse(localStorage.getItem('user'));
+
+
+    navigate('/chat', { state: { sender: friend.sender, receiver: friend.receiver } });
+  };
+
   return (
     <ul role="list" className="divide-y divide-gray-100">
       {friends.map((friend) => (
-        <li key={friend._id} className="flex justify-between gap-x-6 py-5">
+        <li
+          key={friend._id}
+          className="flex justify-between gap-x-6 py-5 cursor-pointer"
+          onClick={() => handlechat(friend)}
+        >
           <div className="flex min-w-0 gap-x-4">
             <img
               className="size-12 flex-none rounded-full bg-gray-50"

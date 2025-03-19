@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
   const [email, setEmail] = useState('');
@@ -7,6 +8,8 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
+      useNavigate
+      const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,11 +26,8 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
     try {
       const response = await axios.post('https://tinder-g832.onrender.com/api/login', { email, password });
       const loggedInUser = response.data.user;
-
-      setUser(loggedInUser);
-      setUserId(loggedInUser._id);
-      setIsLoggedIn(true);
-      
+      console.log(socket)
+        
       localStorage.setItem('user', JSON.stringify(loggedInUser));
 
       if (socket.current) {
@@ -35,6 +35,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       }
 
       setSuccessMessage('Login successful!');
+      navigate('/home');
     } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message);
     } finally {
