@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const FriendRequest = require('../models/friendRequest');
+const FriendRequest = require('../models/FriendRequest');
 const User = require('../models/User');
 const { activeUsers } = require('../utils/socketManager');
 const { io } = require('../server');
