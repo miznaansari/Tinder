@@ -12,7 +12,7 @@ const Acceptedfriendlist = () => {
         
       try {
         const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.post('http://localhost:4000/api/friend-requests/accepted', { id: user._id });
+        const response = await axios.post('https://tinder-1-an6v.onrender.com/api/friend-requests/accepted', { id: user._id });
 
         if (response.data.success) {
           setFriends(response.data.data);
