@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -47,60 +49,122 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12">
-      <div className="sm:max-w-md w-full">
-        <img className="mx-auto h-12 w-auto" src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company" />
-        <h2 className="mt-6 text-center text-2xl font-bold text-gray-900">Create Your Account</h2>
+    <motion.div
+      className="card w-full shadow-xl flex items-center justify-center min-h-screen bg-gray-800"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="card-body sm:max-w-md w-full bg-base-200"
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-center text-2xl font-bold text-gray-200">Create Your Account</h2>
         
-        {error && <p className="mt-4 text-red-500">{error}</p>}
-        {success && <p className="mt-4 text-green-500">{success}</p>}
-        
+        {/* Error and Success Messages with Animation */}
+        {error && (
+          <motion.p
+            className="mt-4 text-red-500"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {error}
+          </motion.p>
+        )}
+        {success && (
+          <motion.p
+            className="mt-4 text-green-500"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {success}
+          </motion.p>
+        )}
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit} encType="multipart/form-data">
-          {/* Name */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-900">Full Name</label>
-            <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange}
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600" />
-          </div>
+          <motion.input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            required
+            value={formData.name}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          />
+          <motion.input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          />
+          <motion.input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+            value={formData.password}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          />
+          <motion.input
+            type="date"
+            name="dob"
+            required
+            value={formData.dob}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          />
+          <motion.input
+            type="file"
+            name="profilePicture"
+            accept="image/*"
+            onChange={handleChange}
+            className="file-input file-input-bordered w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          />
 
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-900">Email Address</label>
-            <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange}
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600" />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-900">Password</label>
-            <input type="password" name="password" id="password" required value={formData.password} onChange={handleChange}
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600" />
-          </div>
-
-          {/* Date of Birth */}
-          <div>
-            <label htmlFor="dob" className="block text-sm font-medium text-gray-900">Date of Birth</label>
-            <input type="date" name="dob" id="dob" required value={formData.dob} onChange={handleChange}
-              className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600" />
-          </div>
-
-          {/* Profile Picture */}
-          <div>
-            <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-900">Profile Picture</label>
-            <input type="file" name="profilePicture" id="profilePicture" accept="image/*" onChange={handleChange}
-              className="mt-2 w-full text-sm text-gray-900 border border-gray-300 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100" />
-          </div>
-
-          {/* Submit Button */}
-          <div>
-            <button type="submit" className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-500" disabled={loading}>
-              {loading ? 'Signing Up...' : 'Sign Up'}
-            </button>
-          </div>
+          <motion.button
+            type="submit"
+            className="btn btn-primary w-full"
+            disabled={loading}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            {loading ? 'Signing Up...' : 'Sign Up'}
+          </motion.button>
         </form>
-
-      </div>
-    </div>
+        <p className="text-center mt-4">
+            Already have an account?{' '}
+            <Link to="/login"
+              className="text-blue-500 hover:underline"
+            >
+              Login
+            </Link>
+          </p>
+      </motion.div>
+    </motion.div>
   );
 };
 

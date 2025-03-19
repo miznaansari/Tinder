@@ -19,8 +19,10 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        const user = JSON.parse(localStorage.getItem('user'));
         const response = await axios.get('https://tinder-g832.onrender.com/api/users');
-        setUsers(response.data);
+        const filteredUsers = response.data.filter((u) => u._id !== user._id);
+    setUsers(filteredUsers);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -87,7 +89,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
     try {
       console.log(existingRequest.receiver._id ); // Sometimes it could be 'id' instead of '_id'
 
-      await axios.post(`http://localhost:4000/api/friend-requests/${action}`,{
+      await axios.post(`https://tinder-g832.onrender.com/api/friend-requests/${action}`,{
         id: existingRequest._id,
         receiverId:existingRequest.receiver._id,
         senderId:existingRequest.sender._id
@@ -104,7 +106,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
 
   const currentUser = users[currentIndex];
   const existingRequest = currentUser
-    ? friendRequests.find((req) => req.receiver?._id === currentUser?._id)
+    ? friendRequests.find((req) => req.sender?._id === currentUser?._id)
     : null;
 
   // Handle Swipe on Mobile with Animation
@@ -135,7 +137,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
 const userdetailname = JSON.parse( userdetail)
   return (
     <div className="flex flex-col items-center justify-center pt-20 bg-gray-100 relative">
-      <h1 className='text-3xl'>{userdetailname.name}</h1>
+      <h1 className='text-3xl text-black'>{userdetailname.name}sdfs</h1>
       <button onClick={onLogout} className="font-bold">Logout</button>
 
       {toastMessage && (
@@ -144,7 +146,7 @@ const userdetailname = JSON.parse( userdetail)
         </div>
       )}
 
-      {notification && <p className="absolute top-4 left-4 p-4 bg-blue-500 text-white rounded-lg shadow-lg">{notification}</p>}
+      {notification && <p className="absolute top-5 left-4 p-4 bg-blue-500 text-white rounded-lg shadow-lg">{notification}</p>}
 
       <div
         ref={cardRef}

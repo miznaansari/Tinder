@@ -161,7 +161,7 @@ router.get('/:userId', async (req, res) => {
   try {
     const requests = await FriendRequest.find({
       $or: [{ sender: userId }, { receiver: userId }]
-    }).populate('sender receiver', 'name email'); // Populate sender and receiver details if needed
+    }).populate('sender receiver', 'name email profilePicture'); // Populate sender and receiver details if needed
 
     res.status(200).json({ success: true, data: requests });
   } catch (error) {

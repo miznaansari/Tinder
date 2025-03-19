@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { motion } from 'framer-motion';
 
 const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [subscribe, setSubscribe] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
-      useNavigate
-      const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,14 +25,18 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       return;
     }
 
+    if (!acceptTerms) {
+      setErrorMessage('You must accept the terms of use.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.post('https://tinder-g832.onrender.com/api/login', { email, password });
       const loggedInUser = response.data.user;
-      console.log(socket)
-        
       localStorage.setItem('user', JSON.stringify(loggedInUser));
 
-      if (socket.current) {
+      if (socket?.current) {
         socket.current.emit('userConnected', loggedInUser._id);
       }
 
@@ -44,56 +50,120 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
   };
 
   return (
-    <div className="flex flex-col justify-center px-6 py-12 lg:px-8 bg-gray-100">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold text-gray-900">Sign in to your account</h2>
-      </div>
+    <motion.div
+      className="flex items-center justify-center lg:min-h-screen mt-25 md:mt-5 lg:mt-0 bg-gray-800"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="card w-100 bg-base-200 shadow-xl"
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="card-body gap-3">
+          <h2 className="text-center text-xl font-bold">Sign In</h2>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
-        {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
+          {/* Error and Success Messages with animation */}
+          {errorMessage && (
+            <motion.p
+              className="text-red-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {errorMessage}
+            </motion.p>
+          )}
+          {successMessage && (
+            <motion.p
+              className="text-green-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {successMessage}
+            </motion.p>
+          )}
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-900">Email address</label>
-            <div className="mt-2">
-              <input
-                type="email"
-                name="email"
-                id="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder-gray-400 focus:outline-indigo-600 focus:ring focus:ring-indigo-600 sm:text-sm"
-              />
-            </div>
-          </div>
+          {/* Input Fields with Animation */}
+          <motion.input
+            type="email"
+            placeholder="Email"
+            className="input input-bordered w-full"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          />
+          <motion.input
+            type="password"
+            placeholder="Password"
+            className="input input-bordered w-full"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          />
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-900">Password</label>
-            <div className="mt-2">
-              <input
-                type="password"
-                name="password"
-                id="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder-gray-400 focus:outline-indigo-600 focus:ring focus:ring-indigo-600 sm:text-sm"
-              />
-            </div>
-          </div>
+          {/* Checkboxes with Animation */}
+          <motion.label
+            className="label cursor-pointer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <input
+              type="checkbox"
+              className="toggle toggle-sm"
+              checked={subscribe}
+              onChange={() => setSubscribe(!subscribe)}
+            />
+            <span className="ml-2">Submit to newsletter</span>
+          </motion.label>
 
-          <div>
-            <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus:outline-indigo-600 focus:ring-2 focus:ring-indigo-600" disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In'}
+          <motion.label
+            className="label cursor-pointer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <input
+              type="checkbox"
+              className="toggle toggle-sm"
+              checked={acceptTerms}
+              onChange={() => setAcceptTerms(!acceptTerms)}
+            />
+            <span className="ml-2">Accept terms of use</span>
+          </motion.label>
+
+          {/* Submit Button with Animation */}
+          <motion.button
+            className="btn btn-neutral w-full"
+            onClick={handleLogin}
+            disabled={loading}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
+            {loading ? 'Signing In...' : 'Sign In'}
+          </motion.button>
+
+          <p className="text-center mt-4">
+            Don't have an account?{' '}
+            <button
+              className="text-blue-500 hover:underline"
+              onClick={() => navigate('/signup')}
+            >
+              Sign up here
             </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </p>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

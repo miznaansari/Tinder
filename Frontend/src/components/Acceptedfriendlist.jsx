@@ -1,20 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate,useLocation } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 const Acceptedfriendlist = () => {
   const [friends, setFriends] = useState([]);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const fetchFriends = async () => {
-        
       try {
         const user = JSON.parse(localStorage.getItem('user'));
         const response = await axios.post('https://tinder-g832.onrender.com/api/friend-requests/accepted', { id: user._id });
 
         if (response.data.success) {
+          response.data.data = response.data.data.map((item) => {
+            if (item.receiver._id === user._id) {
+              const temp = item.receiver;
+              item.receiver = item.sender;
+              item.sender = temp;
+            }
+            return item;
+          });
           setFriends(response.data.data);
         } else {
           console.error('Failed to fetch friends:', response.data.message);
@@ -27,38 +33,28 @@ const Acceptedfriendlist = () => {
     fetchFriends();
   }, []);
 
-  const handlechat = (friend) => {
-    console.log(friend)
-    const user = JSON.parse(localStorage.getItem('user'));
-
-
+  const handleChat = (friend) => {
     navigate('/chat', { state: { sender: friend.sender, receiver: friend.receiver } });
   };
 
   return (
-    <ul role="list" className="divide-y divide-gray-100">
+    <ul className="list bg-white text-gray-900 rounded-box shadow-md mt-3 w-full md:w-1/2 lg:w-1/3">
+<div className='flex justify-between items-center p-1'>
+      <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Accepted Friends List</li>
+      <li className="p-4 pb-2 text-xs opacity-60 tracking-wide"><Link to="/pendingrequest"> Pending Request</Link></li>
+      </div>
       {friends.map((friend) => (
-        <li
-          key={friend._id}
-          className="flex justify-between gap-x-6 py-5 cursor-pointer"
-          onClick={() => handlechat(friend)}
-        >
-          <div className="flex min-w-0 gap-x-4">
-            <img
-              className="size-12 flex-none rounded-full bg-gray-50"
-              src={`https://tinder-g832.onrender.com${friend?.receiver?.profilePicture}` || 'https://via.placeholder.com/256'}
-              alt={friend.receiver.name}
-            />
-            <div className="min-w-0 flex-auto">
-              <p className="text-sm/6 font-semibold text-gray-900">{friend.receiver.name}</p>
-              <p className="mt-1 truncate text-xs/5 text-gray-500">{friend.receiver.email}</p>
+        <li key={friend._id} className="list-row cursor-pointer" onClick={() => handleChat(friend)}>
+          <div className="flex items-center space-x-4">
+            <img className="size-10 rounded-box" src={friend?.receiver?.profilePicture || 'https://via.placeholder.com/256'} alt={friend.receiver.name} />
+            <div>
+              <div className="font-semibold">{friend.receiver.name}</div>
+              <div className="text-xs uppercase font-semibold opacity-60">{friend.receiver.email}</div>
             </div>
           </div>
-          <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-            <p className="text-sm/6 text-gray-900">Friend</p>
-            <p className="mt-1 text-xs/5 text-gray-500">Accepted on {new Date(friend.createdAt).toLocaleString()}</p>
-          </div>
+          
         </li>
+       
       ))}
     </ul>
   );

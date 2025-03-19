@@ -11,6 +11,7 @@ const Chat = () => {
   
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const [showAllMessages, setShowAllMessages] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -23,7 +24,6 @@ const Chat = () => {
     socket.connect();
     socket.emit('userConnected', user._id);
 
-    // Fetch previous messages
     axios.post('https://tinder-g832.onrender.com/api/chat/messages', {
       senderId: sender._id,
       receiverId: receiver._id,
@@ -31,7 +31,6 @@ const Chat = () => {
     .then(res => setMessages(res.data.messages))
     .catch(err => console.error('Error fetching messages:', err));
 
-    // Listen for messages
     socket.on('receiveMessage', (data) => {
       if (
         (data.senderId === sender._id && data.receiverId === receiver._id) ||
@@ -74,13 +73,40 @@ const Chat = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const visibleMessages = showAllMessages ? messages : messages.slice(-15);
+
   return (
-    <div className="flex flex-col h-screen bg-gray-100 p-4">
+    <div className="flex flex-col w-full md:w-1/3 lg:h-screen bg-gray-900 text-white p-4">
       <h2 className="text-2xl font-bold mb-4">Chat with {receiver?.name}</h2>
-      <div className="flex-1 overflow-auto bg-white p-4 rounded-lg shadow-md mb-4">
-        {messages.map((msg, index) => (
-          <div key={index} className={`mb-2 p-2 rounded-lg ${msg.senderId === sender._id ? 'bg-blue-500 text-white self-end' : 'bg-gray-300 text-black self-start'}`}>
-            <p>{msg.senderId === sender._id ? 'You' : receiver?.name}: {msg.message}</p>
+      {messages.length > 15 && !showAllMessages && (
+        <button 
+          onClick={() => setShowAllMessages(true)} 
+          className="mb-2 text-blue-500 underline"
+        >
+          View Past Messages
+        </button>
+      )}
+      <div className="flex-1 overflow-auto bg-gray-800 p-4 rounded-lg shadow-md mb-4">
+        {visibleMessages.map((msg, index) => (
+          <div key={index} className={`chat ${msg.senderId === sender._id ? 'chat-end' : 'chat-start'}`}>
+            <div className="chat-image avatar">
+              <div className="w-10 rounded-full">
+                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="avatar" />
+              </div>
+            </div>
+            <div className="chat-header">
+              {msg.senderId === sender._id ? 'You' : receiver?.name}
+              <time className="text-xs opacity-50">{new Date().toLocaleTimeString()}</time>
+            </div>
+            <div className="chat-bubble bg-gray-700">{msg.message}</div>
+            <div className="chat-footer opacity-50">{msg.senderId === sender._id ? 'Delivered' : 'Seen'}</div>
           </div>
         ))}
         <div ref={messagesEndRef}></div>
@@ -90,8 +116,9 @@ const Chat = () => {
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="flex-1 p-2 border border-gray-300 rounded-lg"
+          className="flex-1 p-2 border text-white bg-gray-700 border-gray-600 rounded-lg"
         />
         <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
       </div>

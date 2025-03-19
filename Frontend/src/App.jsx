@@ -9,6 +9,7 @@ import TinderPage from './components/TinderPage';
 import Navbar from './components/Navbar';
 import Acceptedfriendlist from './components/Acceptedfriendlist';
 import Chat from './components/chat';
+import Pendingrequest from './components/Pendingrequest';
 
 function App() {
   const [userId, setUserId] = useState('');
@@ -60,8 +61,7 @@ const navigate = useNavigate();
   return (
     <>
     <Navbar setCurrentPage={setCurrentPage}  />
-    <div className="bg-gray-100 flex flex-col items-center min-h-screen">
-      <h1 className="text-xl font-bold mt-8">Real-Time Friend Requests with Tinder</h1>
+
 
       <Routes>
       <Route path="/login" element={ <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} setCurrentPage={setCurrentPage} />} />
@@ -69,12 +69,12 @@ const navigate = useNavigate();
       <Route path="/home" element={ <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />} />
       <Route path="/friendlist" element={ <Acceptedfriendlist />} />
       <Route path="/chat" element={<Chat user={user} />} />
+      <Route path="/Pendingrequest" element={<Pendingrequest />} />
     </Routes>
       
 
          
      
-    </div>
     </>
   );
 }
