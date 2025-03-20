@@ -87,7 +87,7 @@ const Chat = () => {
   const visibleMessages = showAllMessages ? messages : messages.slice(-15);
 
   return (
-    <div className="flex flex-col w-full md:w-1/3 lg:h-screen bg-gray-900 text-white p-4">
+    <div className="flex flex-col w-full md:w-1/3 lg:h-screen bg-gray-900 text-white p-4 mb-10">
       <h2 className="text-2xl font-bold mb-4">Chat with {receiver?.name}</h2>
       {messages.length > 15 && !showAllMessages && (
         <button 
@@ -118,16 +118,16 @@ const Chat = () => {
       <div className="flex items-center gap-2">
         
       </div>
-      <div className='flex'>
+      <div className='flex bg-gray-900 fixed bottom-0 p-3 left-0  w-full'>
       <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="flex-1 p-2 border sticky bottom-3 w-7/10 text-white bg-gray-700 border-gray-600 rounded-lg"
+          className=" p-2 border w-8/10 text-white bg-gray-700 border-gray-600 rounded-lg"
         />
-      <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg sticky bottom-3 w-2/10 right-0 ml-2  ">{loader?(<span className="loading loading-spinner loading-xs"></span>):'Send'} </button>
+      <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg fixed bottom-3 w-2/10 right-0 ml-2  ">{loader?(<span className="loading loading-spinner loading-xs"></span>):'Send'} </button>
       </div>
     </div>
     
