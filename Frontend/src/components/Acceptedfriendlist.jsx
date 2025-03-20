@@ -46,7 +46,7 @@ const Acceptedfriendlist = () => {
       {friends.map((friend) => (
         <li key={friend._id} className="list-row cursor-pointer" onClick={() => handleChat(friend)}>
           <div className="flex items-center space-x-4">
-            <img className="size-10 rounded-box" src={friend?.receiver?.profilePicture || 'https://via.placeholder.com/256'} alt={friend.receiver.name} />
+            <img className="size-10 rounded-box object-fit" src={"https://tinder-g832.onrender.com"+friend?.receiver?.profilePicture || 'https://via.placeholder.com/256'} alt={friend.receiver.name} />
             <div>
               <div className="font-semibold">{friend.receiver.name}</div>
               <div className="text-xs uppercase font-semibold opacity-60">{friend.receiver.email}</div>

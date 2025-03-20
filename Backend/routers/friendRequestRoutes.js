@@ -67,6 +67,49 @@ console.log(id)
     res.status(500).json({ error: error.message });
   }
 });
+
+
+
+// Accept Friend Request
+router.post('/reject', async (req, res) => {
+  const { senderId, receiverId ,id} = req.body;
+console.log(id)
+  if (!senderId || !receiverId) {
+    return res.status(400).json({ error: 'Sender and Receiver IDs are required' });
+  }
+
+  try {
+    const request = await FriendRequest.findOne({
+      $or: [
+        { sender: senderId, receiver: receiverId },
+        { sender: receiverId, receiver: senderId }
+      ]
+    });
+    
+
+    if (!request) {
+      return res.status(404).json({ error: 'Friend request not found' });
+    }
+
+    // Update the status to Rejected
+    request.status = 0; // 0: Rejected
+    await request.save();
+
+    // Send a notification to the sender
+    if (activeUsers.has(senderId.toString())) {
+      const senderSocket = activeUsers.get(senderId.toString());
+      senderSocket.emit('friendRequestNotification', {
+        message: `Your friend request to User ${receiverId} was rejected!`,
+        receiverId,
+      });
+      console.log(`Notification sent to User ${senderId}`);
+    }
+
+    res.status(200).json({ message: 'Friend request accepted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 // Status Mapping
 const statusLabels = {
   0: 'Rejected',

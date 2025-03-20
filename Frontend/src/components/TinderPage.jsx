@@ -137,7 +137,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
 const userdetailname = JSON.parse( userdetail)
   return (
     <div className="flex flex-col items-center justify-center pt-20 bg-gray-100 relative">
-      <h1 className='text-3xl text-black'>{userdetailname.name}sdfs</h1>
+      <h1 className='text-3xl text-black'>{userdetailname.name}</h1>
       <button onClick={onLogout} className="font-bold">Logout</button>
 
       {toastMessage && (
