@@ -50,7 +50,7 @@ const Signup = () => {
 
   return (
     <motion.div
-      className="card w-full shadow-xl flex items-center justify-center min-h-screen bg-gray-800"
+      className="card w-full shadow-xl flex items-center justify-center min-h-screen "
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -61,7 +61,7 @@ const Signup = () => {
         animate={{ scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-center text-2xl font-bold text-gray-200">Create Your Account</h2>
+        <h2 className="text-center text-2xl font-bold text-base-content">Create Your Account</h2>
         
         {/* Error and Success Messages with Animation */}
         {error && (
@@ -122,17 +122,24 @@ const Signup = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.5 }}
           />
+          <motion.label htmlFor="" className='text-base-content pb-2'    initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}>D.O.B</motion.label>
+
           <motion.input
             type="date"
             name="dob"
             required
             value={formData.dob}
             onChange={handleChange}
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-base-content"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           />
+          <motion.label htmlFor="" className='text-base-content pb-2'initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}>Upload Your Photo</motion.label>
           <motion.input
             type="file"
             name="profilePicture"
@@ -146,7 +153,7 @@ const Signup = () => {
 
           <motion.button
             type="submit"
-            className="btn btn-primary w-full"
+            className="btn btn-neutral w-full"
             disabled={loading}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -156,7 +163,7 @@ const Signup = () => {
           </motion.button>
         </form>
         <p className="text-center mt-4">
-            Already have an account?{' '}
+        If you already have an account{' '}
             <Link to="/login"
               className="text-blue-500 hover:underline"
             >

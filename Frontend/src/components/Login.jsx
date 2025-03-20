@@ -51,7 +51,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
 
   return (
     <motion.div
-      className="flex items-center justify-center lg:min-h-screen mt-25 md:mt-5 lg:mt-0 bg-gray-800"
+      className="flex items-center justify-center  mt-25     "
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
