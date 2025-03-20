@@ -13,6 +13,7 @@ const Chat = () => {
   const [message, setMessage] = useState('');
   const [showAllMessages, setShowAllMessages] = useState(false);
   const messagesEndRef = useRef(null);
+  const [loader, setloader] = useState(false)
 
   useEffect(() => {
     if (!sender || !receiver) {
@@ -51,6 +52,7 @@ const Chat = () => {
   }, [messages]);
 
   const sendMessage = async () => {
+    setloader(true);
     if (!message.trim()) return;
 
     const user = JSON.parse(localStorage.getItem('user'));
@@ -68,6 +70,8 @@ const Chat = () => {
       socket.emit('sendMessage', newMessage);
       setMessages((prev) => [...prev, newMessage]);
       setMessage('');
+    setloader(false);
+
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -112,17 +116,21 @@ const Chat = () => {
         <div ref={messagesEndRef}></div>
       </div>
       <div className="flex items-center gap-2">
-        <input
+        
+      </div>
+      <div className='flex'>
+      <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="flex-1 p-2 border text-white bg-gray-700 border-gray-600 rounded-lg"
+          className="flex-1 p-2 border sticky bottom-3 w-7/10 text-white bg-gray-700 border-gray-600 rounded-lg"
         />
-        <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
+      <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg sticky bottom-3 w-2/10 right-0 ml-2  ">{loader?(<span className="loading loading-spinner loading-xs"></span>):'Send'} </button>
       </div>
     </div>
+    
   );
 };
 
