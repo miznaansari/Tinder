@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { FaFacebookMessenger, FaTelegramPlane } from 'react-icons/fa';
 import { FaMoon, FaSun } from 'react-icons/fa';
+import { IoIosSearch } from "react-icons/io";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -37,11 +38,12 @@ const Navbar = () => {
           )}
         </div>
         <div className='flex gap-6 items-center'>
+          {user &&  <IoIosSearch className='text-xl' onClick={()=>navigate('/search')}  /> }
         <Link to="/friendlist" className="text-base-content text-2xl">
           <FaTelegramPlane />
         </Link>
          <button onClick={toggleTheme} className="btn btn-ghost btn-sm">
-                  {theme === 'light' ? <FaMoon /> : <FaSun />}
+                  {theme === 'light' ? <FaMoon className='text-md' /> : <FaSun className='text-lg' />}
                 </button>
                 </div>
       </div>

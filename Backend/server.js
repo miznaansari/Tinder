@@ -10,6 +10,7 @@ const createUserRoutes = require('./routers/Createuser');
 const friendRequestRoutes = require('./routers/friendRequestRoutes');
 const Chat = require('./models/chat');
 const FriendRequest = require('./models/FriendRequest');
+const User = require('./models/User');
 
 const app = express();
 const server = http.createServer(app);
@@ -190,6 +191,27 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
   
+});
+
+
+// Endpoint to handle Google Sign-In data
+app.post('/api/google-login', async (req, res) => {
+  const { name, email, profilePicture } = req.body;
+
+  try {
+    // Check if user already exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user
+      user = new User({ name, email, profilePicture, password: '', dob: new Date() });
+      await user.save();
+    }
+    res.status(200).json({ message: 'User signed in successfully', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error signing in', error });
+  }
 });
 
 // Start Server

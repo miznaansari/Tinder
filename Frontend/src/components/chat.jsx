@@ -87,8 +87,8 @@ const Chat = () => {
   const visibleMessages = showAllMessages ? messages : messages.slice(-15);
 
   return (
-    <div className="flex flex-col w-full md:w-1/3 lg:h-screen bg-gray-900 text-white p-4 mb-10">
-      <h2 className="text-2xl font-bold mb-4">Chat with {receiver?.name}</h2>
+    <div className="flex flex-col w-full md:w-1/3 lg:h-screen bg-base-200 text-white p-4 mb-10">
+      <h2 className="text-2xl font-bold mb-4 text-base-content">Chat with {receiver?.name}</h2>
       {messages.length > 15 && !showAllMessages && (
         <button 
           onClick={() => setShowAllMessages(true)} 
@@ -97,7 +97,7 @@ const Chat = () => {
           View Past Messages
         </button>
       )}
-      <div className="flex-1 overflow-auto bg-gray-800 p-4 rounded-lg shadow-md mb-4">
+      <div className="flex-1 overflow-auto bg-base-200 p-4 rounded-lg shadow-md mb-4">
         {visibleMessages.map((msg, index) => (
           <div key={index} className={`chat ${msg.senderId === sender._id ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-image avatar">
@@ -105,12 +105,12 @@ const Chat = () => {
                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="avatar" />
               </div>
             </div>
-            <div className="chat-header">
+            <div className="chat-header text-base-content">
               {msg.senderId === sender._id ? 'You' : receiver?.name}
-              <time className="text-xs opacity-50">{new Date().toLocaleTimeString()}</time>
+              <time className="text-xs text-base-content opacity-50">{new Date().toLocaleTimeString()}</time>
             </div>
-            <div className="chat-bubble bg-gray-700">{msg.message}</div>
-            <div className="chat-footer opacity-50">{msg.senderId === sender._id ? 'Delivered' : 'Seen'}</div>
+            <div className="chat-bubble ">{msg.message}</div>
+            <div className="chat-footer opacity-50 text-base-content">{msg.senderId === sender._id ? 'Delivered' : 'Seen'}</div>
           </div>
         ))}
         <div ref={messagesEndRef}></div>
@@ -118,14 +118,14 @@ const Chat = () => {
       <div className="flex items-center gap-2">
         
       </div>
-      <div className='flex bg-gray-900 fixed bottom-0 p-3 left-0  w-full'>
+      <div className='flex bg-base-200 fixed bottom-0 p-3 left-0  w-full'>
       <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className=" p-2 border w-8/10 text-white bg-gray-700 border-gray-600 rounded-lg"
+          className=" p-2 border w-8/10 text-base-content bg-base-200 border border-base-900 rounded-lg"
         />
       <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg fixed bottom-3 w-2/10 right-0 ml-2  ">{loader?(<span className="loading loading-spinner loading-xs"></span>):'Send'} </button>
       </div>
