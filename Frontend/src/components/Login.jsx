@@ -59,7 +59,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       const user = result.user;
 
       // Send user data to backend
-      const response = await axios.post('https://tinder-1-an6v.onrender.com/api/google-login', { name: user.displayName,
+      const response = await axios.post('https://tinder-g832.onrender.com/api/google-login', { name: user.displayName,
         email: user.email,
         profilePicture: user.photoURL });
       console.log(response.data.user);
