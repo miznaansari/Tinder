@@ -10,6 +10,8 @@ import Navbar from './components/Navbar';
 import Acceptedfriendlist from './components/Acceptedfriendlist';
 import Chat from './components/chat';
 import Pendingrequest from './components/Pendingrequest';
+import { OnlineStatusProvider } from './components/OnlineStatusContext';
+import OnlineNotification from './components/OnlineNotification';
 
 function App() {
   const [userId, setUserId] = useState('');
@@ -20,7 +22,7 @@ const navigate = useNavigate();
   const socket = useRef(null);
 
   useEffect(() => {
-    socket.current = io('https://tinder-g832.onrender.com');
+    socket.current = io('http://localhost:4000/');
     console.log(socket)
 
     const storedUser = localStorage.getItem('user');
@@ -58,11 +60,23 @@ const navigate = useNavigate();
   
   const [friendlist, setfriendlist] = useState(false);
   const [user, setUser] = useState(null);
+  const [onlinestatus, setonlinestatus] = useState(false)
+ 
   return (
     <>
+    
+     <OnlineStatusProvider >
     <Navbar setCurrentPage={setCurrentPage}  />
+    <OnlineNotification />
 
-
+    {onlinestatus && <div role="alert" className="alert alert-error">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+  <span>Your are Offline.</span>
+</div>
+}
+    
       <Routes>
       <Route path="/login" element={ <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} setCurrentPage={setCurrentPage} />} />
       <Route path="/signup" element={<Signup setCurrentPage={setCurrentPage} />} />
@@ -70,8 +84,9 @@ const navigate = useNavigate();
       <Route path="/friendlist" element={ <Acceptedfriendlist />} />
       <Route path="/chat" element={<Chat user={user} />} />
       <Route path="/Pendingrequest" element={<Pendingrequest />} />
+      <Route path="/Online" element={<OnlineNotification />} />
     </Routes>
-      
+    </OnlineStatusProvider>
 
          
      

@@ -38,6 +38,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
 
       if (socket?.current) {
         socket.current.emit('userConnected', loggedInUser._id);
+        socket.current.emit('user-online', loggedInUser._id);
       }
 
       setSuccessMessage('Login successful!');

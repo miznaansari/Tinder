@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import { useOnlineStatus } from './OnlineStatusContext';
 
 const Acceptedfriendlist = () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const navigate = useNavigate();
+  const onlineUsers = useOnlineStatus();
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -36,8 +36,7 @@ const Acceptedfriendlist = () => {
     };
 
     fetchFriends();
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+  }, []);
 
   const handleChat = (friend) => {
     navigate('/chat', { state: { sender: friend.sender, receiver: friend.receiver } });
@@ -61,13 +60,21 @@ const Acceptedfriendlist = () => {
         friends.map((friend) => (
           <li key={friend._id} className="list-row cursor-pointer hover:bg-base-300 p-2 rounded-md" onClick={() => handleChat(friend)}>
             <div className="flex items-center space-x-4">
-              <img 
-                className="size-10 rounded-box object-cover" 
-                src={friend?.receiver?.profilePicture 
-                  ? `https://tinder-g832.onrender.com${friend.receiver.profilePicture}` 
-                  : 'https://via.placeholder.com/256'} 
-                alt={friend?.receiver?.name || 'User'} 
-              />
+              <div className="avatar indicator">
+                {onlineUsers.get(friend.receiver._id) ? (
+                  <span className="indicator-item badge badge-success">Online</span>
+                ) : (
+                  <span className="indicator-item badge badge-error">Offline</span>
+                )}
+                <div className="h-20 w-20 rounded-lg">
+                  <img 
+                    src={friend?.receiver?.profilePicture 
+                      ? `https://tinder-g832.onrender.com${friend.receiver.profilePicture}` 
+                      : 'https://via.placeholder.com/256'} 
+                    alt={friend?.receiver?.name || 'User'} 
+                  />
+                </div>
+              </div>
               <div>
                 <div className="font-semibold">{friend?.receiver?.name}</div>
                 <div className="text-xs uppercase font-semibold opacity-60">{friend?.receiver?.email}</div>

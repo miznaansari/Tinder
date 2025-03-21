@@ -23,7 +23,7 @@ const Chat = () => {
     const user = JSON.parse(localStorage.getItem('user'));
 
     socket.connect();
-    socket.emit('userConnected', user._id);
+    socket.emit('userConnected', user._id,user.name);
 
     axios.post('https://tinder-g832.onrender.com/api/chat/messages', {
       senderId: sender._id,
