@@ -70,6 +70,9 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       navigate('/home');
     } catch (error) {
       console.error('Error during Google sign-in:', error);
+    } finally {
+      // Ensure loader is stopped in both success and error cases
+      setgoogleLoader(false);
     }
   };
 
