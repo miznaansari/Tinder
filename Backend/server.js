@@ -204,7 +204,7 @@ app.post('/api/google-login', async (req, res) => {
 
     if (!user) {
       // Create new user
-      user = new User({ name, email, profilePicture, password: '', dob: new Date() });
+      user = new User({ name, email, profilePicture, password: '123123123', dob: new Date() });
       await user.save();
     }
     res.status(200).json({ message: 'User signed in successfully', user });
