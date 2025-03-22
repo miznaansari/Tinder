@@ -87,7 +87,7 @@ const Chat = () => {
   const visibleMessages = showAllMessages ? messages : messages.slice(-15);
 
   return (
-    <div className="flex flex-col w-full md:w-1/3 lg:h-screen bg-base-200 text-white p-4 mb-10">
+    <div className="flex flex-col w-full md:w-1/3  lg:h-screen bg-base-200 text-white p-4 mb-10">
       <h2 className="text-2xl font-bold mb-4 text-base-content">Chat with {receiver?.name}</h2>
       {messages.length > 15 && !showAllMessages && (
         <button 
@@ -97,7 +97,7 @@ const Chat = () => {
           View Past Messages
         </button>
       )}
-      <div className="flex-1 overflow-auto bg-base-200 p-4 rounded-lg shadow-md mb-4">
+      <div className="flex-1 overflow-auto bg-base-200 p-4 rounded-lg shadow-md mb-4 ">
         {visibleMessages.map((msg, index) => (
           <div key={index} className={`chat ${msg.senderId === sender._id ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-image avatar">
