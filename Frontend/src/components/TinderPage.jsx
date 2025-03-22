@@ -64,7 +64,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
         await axios.post(`${import.meta.env.VITE_URL}/api/friend-requests/send`, { senderId, receiverId });
         showToast(`Friend request sent to ${users[currentIndex].name}`);
       } catch (error) {
-        showToast(error.message || 'Error sending friend request', 'error');
+        showToast(error?.response?.data?.error || 'Error sending friend request', 'error');
       }
     }
 

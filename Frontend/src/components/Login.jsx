@@ -46,7 +46,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       setSuccessMessage('Login successful!');
       navigate('/home');
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || error.message);
+      setErrorMessage(error.response?.data?.error || error.message);
     } finally {
       setLoading(false);
     }
