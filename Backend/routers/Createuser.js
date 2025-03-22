@@ -12,6 +12,39 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+
+
+
+// API to update profile picture
+router.put('/updateProfilePicture', upload.single('profilePicture'), async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update profile picture
+    if (req.file) {
+      user.profilePicture = `/uploads/${req.file.filename}`;
+      await user.save();
+      return res.status(200).json({ success: 'Profile picture updated successfully', user });
+    } else {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
 // Register Route
 router.post('/create', upload.single('profilePicture'), async (req, res) => {
   try {

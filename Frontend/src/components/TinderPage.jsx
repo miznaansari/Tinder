@@ -1,7 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
+
 
 const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
+  const navigate = useNavigate();
+   useEffect(() => {
+    const user = localStorage.getItem('user');
+          if (!user) {
+            navigate('/login');
+          }
+        }, [user, navigate]);
+
   const [users, setUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [friendRequests, setFriendRequests] = useState([]);

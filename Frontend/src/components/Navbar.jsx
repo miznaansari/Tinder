@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { FaFacebookMessenger, FaTelegramPlane } from 'react-icons/fa';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { IoIosSearch } from "react-icons/io";
+import { CiUser } from "react-icons/ci";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -42,8 +43,9 @@ const Navbar = () => {
         <Link to="/friendlist" className="text-base-content text-2xl">
           <FaTelegramPlane />
         </Link>
+        <h1 onClick={()=>navigate('/profile')}><CiUser className='text-2xl' /></h1>
          <button onClick={toggleTheme} className="btn btn-ghost btn-sm">
-                  {theme === 'light' ? <FaMoon className='text-md' /> : <FaSun className='text-lg' />}
+                  {theme !== 'light' ? <FaMoon className='text-md' /> : <FaSun className='text-lg' />}
                 </button>
                 </div>
       </div>

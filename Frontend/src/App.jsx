@@ -13,6 +13,7 @@ import Pendingrequest from './components/Pendingrequest';
 import { OnlineStatusProvider } from './components/OnlineStatusContext';
 import OnlineNotification from './components/OnlineNotification';
 import UserSearch from './components/UserSearch';
+import Userprofile from './components/Userprofile';
 
 function App() {
   const [userId, setUserId] = useState('');
@@ -88,6 +89,7 @@ const navigate = useNavigate();
       <Route path="/Pendingrequest" element={<Pendingrequest />} />
       <Route path="/Online" element={<OnlineNotification />} />
       <Route path="/search" element={<UserSearch />} />
+      <Route path="/profile" element={<Userprofile />} />
     </Routes>
     </OnlineStatusProvider>
 
