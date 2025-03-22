@@ -3,7 +3,55 @@ const router = express.Router();
 const FriendRequest = require('../models/FriendRequest');
 const User = require('../models/User');
 const { activeUsers } = require('../utils/socketManager');
-const { io } = require('../server');
+const http = require('http');
+const app = express();
+const socketIo = require('socket.io');
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: '*', // Adjust this if necessary
+    methods: ['GET', 'POST'],
+  }
+});
+
+
+// Send Friend Request
+router.post('/send', async (req, res) => {
+  const { senderId, receiverId } = req.body;
+
+  if (!senderId || !receiverId) {
+    return res.status(400).json({ error: 'Sender and Receiver IDs are required' });
+  }
+
+  const sender = await User.findById(senderId);
+  const receiver = await User.findById(receiverId);
+
+  if (!sender || !receiver) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  // Check for existing request
+  const existingRequest = await FriendRequest.findOne({ sender, receiver });
+  if (existingRequest) {
+    return res.status(400).json({ error: 'Friend request already sent' });
+  }
+
+  const newRequest = new FriendRequest({ sender, receiver });
+  await newRequest.save();
+
+  // Real-Time Notification
+  if (activeUsers.has(receiverId.toString())) {
+    const receiverSocket = activeUsers.get(receiverId.toString());
+    receiverSocket.emit('friendRequestNotification', {
+      message: `Your friend request to User ${receiverId} was send you request!`,
+      receiverId,
+    });
+    console.log(`Notification sent to User ${receiverId}`);
+  }
+  res.status(201).json({ message: 'Friend request sent successfully' });
+});
+
+
 
 
 router.post('/accepted', async (req, res) => {
@@ -152,46 +200,6 @@ router.get('/status/:userId', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
-
-// Send Friend Request
-router.post('/send', async (req, res) => {
-  const { senderId, receiverId } = req.body;
-
-  if (!senderId || !receiverId) {
-    return res.status(400).json({ error: 'Sender and Receiver IDs are required' });
-  }
-
-  const sender = await User.findById(senderId);
-  const receiver = await User.findById(receiverId);
-
-  if (!sender || !receiver) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  // Check for existing request
-  const existingRequest = await FriendRequest.findOne({ sender, receiver });
-  if (existingRequest) {
-    return res.status(400).json({ error: 'Friend request already sent' });
-  }
-
-  const newRequest = new FriendRequest({ sender, receiver });
-  await newRequest.save();
-
-  // Real-Time Notification
-  if (activeUsers.has(receiverId.toString())) {
-    const socket = activeUsers.get(receiverId.toString());
-    socket.emit('friendRequestNotification', {
-      message: `${sender.name} sent you a friend request!`,
-      senderId: senderId,
-      senderName: sender.name
-    });
-    console.log(`Notification sent to User ${receiverId}`);
-  } else {
-    console.log(`User ${receiverId} is not online.`);
-  }
-
-  res.status(201).json({ message: 'Friend request sent successfully' });
 });
 
 

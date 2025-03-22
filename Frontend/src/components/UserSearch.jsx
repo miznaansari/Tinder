@@ -9,7 +9,7 @@ const UserSearch = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('https://tinder-g832.onrender.com/api/users');
+        const response = await axios.get(`${import.meta.env.VITE_URL}/api/users`);
         setUsers(response.data);
         setFilteredUsers(response.data);
       } catch (error) {

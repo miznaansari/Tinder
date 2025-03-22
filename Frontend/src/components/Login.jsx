@@ -34,7 +34,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
     }
 
     try {
-      const response = await axios.post('https://tinder-g832.onrender.com/api/login', { email, password });
+      const response = await axios.post(`${import.meta.env.VITE_URL}/api/login`, { email, password });
       const loggedInUser = response.data.user;
       localStorage.setItem('user', JSON.stringify(loggedInUser));
 
@@ -59,7 +59,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       const user = result.user;
 
       // Send user data to backend
-      const response = await axios.post('https://tinder-g832.onrender.com/api/google-login', { name: user.displayName,
+      const response = await axios.post(`${import.meta.env.VITE_URL}/api/google-login`, { name: user.displayName,
         email: user.email,
         profilePicture: user.photoURL });
       console.log(response.data.user);

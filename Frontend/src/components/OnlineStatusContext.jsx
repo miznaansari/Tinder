@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
 const OnlineStatusContext = createContext();
-const socket = io('https://tinder-g832.onrender.com');
+const socket = io(`${import.meta.env.VITE_URL}`);
 
 export const OnlineStatusProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState(new Map());

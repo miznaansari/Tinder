@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('https://tinder-g832.onrender.com'); // Adjust the URL if needed
+const socket = io(`${import.meta.env.VITE_URL}`); // Adjust the URL if needed
 
 const OnlineNotification = () => {
   const [toastMessage, setToastMessage] = useState('');

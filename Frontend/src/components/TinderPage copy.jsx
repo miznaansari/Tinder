@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useOnlineStatus } from './OnlineStatusContext';
 
 const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   const [users, setUsers] = useState([]);
@@ -12,16 +11,27 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   const [isSwiping, setIsSwiping] = useState(false);
   const [swipeComplete, setSwipeComplete] = useState(false);
   const [userdetail, setuser] = useState(localStorage.getItem('user'));
-const onlineUsers = useOnlineStatus();
+
   const cardRef = useRef(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
   useEffect(() => {
+    if (socket) {
+      socket.on('friendRequestNotification', (data) => {
+        console.log(data.message);
+      });
+  
+      return () => socket.off('friendRequestNotification');
+    }
+  }, [socket]);
+  
+
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.get('https://tinder-g832.onrender.com/api/users');
+        const response = await axios.get('http://localhost:4000/api/users');
         const filteredUsers = response.data.filter((u) => u._id !== user._id);
     setUsers(filteredUsers);
       } catch (error) {
@@ -34,7 +44,7 @@ const onlineUsers = useOnlineStatus();
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (!storedUser || !storedUser._id) return;
 
-        const response = await axios.get(`https://tinder-g832.onrender.com/api/friend-requests/${storedUser._id}`);
+        const response = await axios.get(`http://localhost:4000/api/friend-requests/${storedUser._id}`);
         setFriendRequests(response.data.data);
       } catch (error) {
         console.error('Error fetching friend requests:', error);
@@ -62,7 +72,7 @@ const onlineUsers = useOnlineStatus();
         const senderId = storedUser._id;
         const receiverId = users[currentIndex]._id;
 
-        await axios.post('https://tinder-g832.onrender.com/api/friend-requests/send', { senderId, receiverId });
+        await axios.post('http://localhost:4000/api/friend-requests/send', { senderId, receiverId });
         showToast(`Friend request sent to ${users[currentIndex].name}`);
       } catch (error) {
         showToast(error.message || 'Error sending friend request', 'error');
@@ -90,7 +100,7 @@ const onlineUsers = useOnlineStatus();
     try {
       console.log(existingRequest.receiver._id ); // Sometimes it could be 'id' instead of '_id'
 
-      await axios.post(`https://tinder-g832.onrender.com/api/friend-requests/${action}`,{
+      await axios.post(`http://localhost:4000/api/friend-requests/${action}`,{
         id: existingRequest._id,
         receiverId:existingRequest.receiver._id,
         senderId:existingRequest.sender._id
@@ -160,7 +170,7 @@ const userdetailname = JSON.parse( userdetail)
       >
         <img
           src={currentUser?.profilePicture
-            ? `https://tinder-g832.onrender.com${currentUser.profilePicture}`
+            ? `http://localhost:4000${currentUser.profilePicture}`
             : "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
           alt={currentUser?.name || "Default Avatar"}
           className="w-full h-2/3 object-cover"

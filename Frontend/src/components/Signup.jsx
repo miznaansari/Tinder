@@ -37,7 +37,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post('https://tinder-g832.onrender.com/api/create', formDataToSend, {
+      const response = await axios.post(`${import.meta.env.VITE_URL}/api/create`, formDataToSend, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setSuccess(response.data.success);

@@ -11,7 +11,7 @@ const PendingRequest = () => {
     const fetchRequests = async () => {
       const user = JSON.parse(localStorage.getItem('user'));
       try {
-        const response = await axios.get(`https://tinder-g832.onrender.com/api/friend-requests/${user._id}`);
+        const response = await axios.get(`http://localhost:4000/api/friend-requests/${user._id}`);
         const filteredRequests = response.data.data.filter(request => request.sender?._id !== user._id && request.status !== 1);
         setRequests(filteredRequests);
       } catch (error) {
@@ -26,7 +26,7 @@ const PendingRequest = () => {
   const handleAction = async (id, action) => {
     try {
       const idd = id._id;
-      const response = await axios.post(`https://tinder-g832.onrender.com/api/friend-requests/${action}`, {
+      const response = await axios.post(`${import.meta.env.VITE_URL}/api/friend-requests/${action}`, {
         id: id._id,
         receiverId: id.receiver._id,
         senderId: id.sender._id
@@ -61,7 +61,7 @@ const PendingRequest = () => {
             <li key={request._id} className="list-row flex items-center justify-between p-4 border-b">
               <div className='flex items-center gap-4'>
                 <div className="text-2xl font-thin text-base-content opacity-30 tabular-nums">{index + 1}</div>
-                <img className="size-10 rounded-box" src={request.sender?.profileImage ? `https://tinder-g832.onrender.com${request.sender.profileImage}` : 'https://img.daisyui.com/images/profile/demo/1@94.webp'} alt={request.sender?.name || 'User'} />
+                <img className="size-10 rounded-box" src={request.sender?.profileImage ? `http://localhost:4000${request.sender.profileImage}` : 'https://img.daisyui.com/images/profile/demo/1@94.webp'} alt={request.sender?.name || 'User'} />
                 <div className="list-col-grow">
                   <div className='text-base-content'>{request.sender?.name || 'Unknown'}</div>
                 </div>

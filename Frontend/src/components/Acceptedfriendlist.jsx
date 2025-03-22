@@ -13,7 +13,7 @@ const Acceptedfriendlist = () => {
     const fetchFriends = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.post('https://tinder-g832.onrender.com/api/friend-requests/accepted', { id: user._id });
+        const response = await axios.post(`${import.meta.env.VITE_URL}/api/friend-requests/accepted`, { id: user._id });
 
         if (response.data.success) {
           response.data.data = response.data.data.map((item) => {
@@ -69,7 +69,7 @@ const Acceptedfriendlist = () => {
                 <div className="h-20 w-20 rounded-lg">
                   <img 
                     src={friend?.receiver?.profilePicture 
-                      ? `https://tinder-g832.onrender.com${friend.receiver.profilePicture}` 
+                      ? `import.meta.env.VITE_URL${friend.receiver.profilePicture}` 
                       : 'https://via.placeholder.com/256'} 
                     alt={friend?.receiver?.name || 'User'} 
                   />

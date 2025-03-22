@@ -20,7 +20,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
     const fetchUsers = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.get('https://tinder-g832.onrender.com/api/users');
+        const response = await axios.get(`${import.meta.env.VITE_URL}/api/users`);
         const filteredUsers = response.data.filter((u) => u._id !== user._id);
     setUsers(filteredUsers);
       } catch (error) {
@@ -33,7 +33,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (!storedUser || !storedUser._id) return;
 
-        const response = await axios.get(`https://tinder-g832.onrender.com/api/friend-requests/${storedUser._id}`);
+        const response = await axios.get(`${import.meta.env.VITE_URL}/api/friend-requests/${storedUser._id}`);
         setFriendRequests(response.data.data);
       } catch (error) {
         console.error('Error fetching friend requests:', error);
@@ -61,7 +61,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
         const senderId = storedUser._id;
         const receiverId = users[currentIndex]._id;
 
-        await axios.post('https://tinder-g832.onrender.com/api/friend-requests/send', { senderId, receiverId });
+        await axios.post(`${import.meta.env.VITE_URL}/api/friend-requests/send`, { senderId, receiverId });
         showToast(`Friend request sent to ${users[currentIndex].name}`);
       } catch (error) {
         showToast(error.message || 'Error sending friend request', 'error');
@@ -89,7 +89,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
     try {
       console.log(existingRequest.receiver._id ); // Sometimes it could be 'id' instead of '_id'
 
-      await axios.post(`https://tinder-g832.onrender.com/api/friend-requests/${action}`,{
+      await axios.post(`${import.meta.env.VITE_URL}/api/friend-requests/${action}`,{
         id: existingRequest._id,
         receiverId:existingRequest.receiver._id,
         senderId:existingRequest.sender._id
@@ -159,7 +159,7 @@ const userdetailname = JSON.parse( userdetail)
       >
         <img
           src={currentUser?.profilePicture
-            ? `https://tinder-g832.onrender.com${currentUser.profilePicture}`
+            ? `${import.meta.env.VITE_URL}${currentUser.profilePicture}`
             : "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
           alt={currentUser?.name || "Default Avatar"}
           className="w-full h-2/3 object-cover"

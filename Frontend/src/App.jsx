@@ -23,7 +23,7 @@ const navigate = useNavigate();
   const socket = useRef(null);
 
   useEffect(() => {
-    socket.current = io('http://localhost:4000/');
+    socket.current = io(`${import.meta.env.VITE_URL}`);
     console.log(socket)
 
     const storedUser = localStorage.getItem('user');
@@ -38,6 +38,7 @@ const navigate = useNavigate();
 
     socket.current.on('friendRequestNotification', (data) => {
       setNotification(data.message);
+      setTimeout(()=>setNotification(''),5000)  ;
     });
 
     return () => {
