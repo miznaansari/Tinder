@@ -11,7 +11,7 @@ const PendingRequest = () => {
     const fetchRequests = async () => {
       const user = JSON.parse(localStorage.getItem('user'));
       try {
-        const response = await axios.get(`http://localhost:4000/api/friend-requests/${user._id}`);
+        const response = await axios.get(`${import.meta.env.VITE_URL}/api/friend-requests/${user._id}`);
         const filteredRequests = response.data.data.filter(request => request.sender?._id !== user._id && request.status !== 1);
         setRequests(filteredRequests);
       } catch (error) {
