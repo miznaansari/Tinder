@@ -65,6 +65,11 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       console.log(response.data.user);
       // const userdata = JSON.parse(response.data.user)
       localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      if (socket?.current) {
+        socket.current.emit('userConnected', response.data.user._id);
+        socket.current.emit('user-online', response.data.user._id);
+      }
     setgoogleLoader(false)
 
       navigate('/home');
