@@ -5,102 +5,122 @@ const Userprofile = () => {
     const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [loader, setloader] = useState(false);
+    const [success, setsuccess] = useState(false)
+
     const [user, setuser] = useState(() => {
         const storedUser = localStorage.getItem('user');
         return storedUser ? JSON.parse(storedUser) : null;
-      });
-       // Get user from localStorage
-    
-       useEffect(() => {
+    });
+    // Get user from localStorage
+
+    useEffect(() => {
         if (!user) {
-          navigate('/login');
+            navigate('/login');
         }
-      }, [user, navigate]);
-     // Handle file selection and create preview
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setProfilePicture(file);
+    }, [user, navigate]);
+    // Handle file selection and create preview
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setProfilePicture(file);
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result); // Set image preview
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result); // Set image preview
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
-  
-  // Handle image upload
-  const handleUpload = async () => {
-    const user = JSON.parse(localStorage.getItem('user')); // Get user from localStorage
-    if (!user || !user._id) {
-      return alert('User not found. Please log in.');
-    }
 
-    if (!profilePicture) {
-      return alert('Please select a picture to upload.');
-    }
+    // Handle image upload
+    const handleUpload = async () => {
+        setloader(true);
+        const user = JSON.parse(localStorage.getItem('user')); // Get user from localStorage
+        if (!user || !user._id) {
+        setloader(false);
 
-    const formData = new FormData();
-    formData.append('profilePicture', profilePicture);
-    formData.append('userId', user._id);
+            return alert('User not found. Please log in.');
+        }
 
-    // try {
-      const response = await axios.put(`${import.meta.env.VITE_URL}/api/updateProfilePicture`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const updatedUser = response.data.user;
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      setuser(updatedUser); 
+        if (!profilePicture) {
+        setloader(false);
 
-      alert(response.data.success || 'Profile picture updated successfully');
-      setPreview(null); // Clear preview after successful upload
-    // } catch (error) {
-    //   console.error('Error:', error);
-    //   alert(error.response?.data?.error || 'Failed to upload picture');
-    // }
-  };
+            return alert('Please select a picture to upload.');
+        }
+
+        const formData = new FormData();
+        formData.append('profilePicture', profilePicture);
+        formData.append('userId', user._id);
+
+        try {
+            const response = await axios.put(`${import.meta.env.VITE_URL}/api/updateProfilePicture`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            const updatedUser = response.data.user;
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            setuser(updatedUser);
+            setloader(false);
+
+            setsuccess(true)
+            setTimeout(() => setsuccess(false), 5000)
+            //   alert(response.data.success || 'Profile picture updated successfully');
+            setPreview(null); // Clear preview after successful upload
+             // ✅ Close Modal
+    document.getElementById('my_modal_1').close();
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.response?.data?.error || 'Failed to upload picture');
+        }
+    };
     return (
         <>
+
+            {success && <div role="alert" className="alert alert-success mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Profile picture updated successfully!</span>
+            </div>}
             <div className='lg:flex lg:justify-around lg:mt-10 mt-5'>
                 <div className='flex'>
                     <div className="avatar flex-col">
                         <div className="w-24 rounded">
-                        <img src={user?.profilePicture ? import.meta.env.VITE_URL + user.profilePicture : "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"} />
+                            <img src={user?.profilePicture ? import.meta.env.VITE_URL + user.profilePicture : "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"} />
                         </div>
-                          {/* Open Modal */}
-      <button className="btn w-24 text-[10px]" onClick={() => document.getElementById('my_modal_1').showModal()}>
-        Upload Pic
-      </button>
+                        {/* Open Modal */}
+                        <button className="btn w-24 text-[10px]" onClick={() => document.getElementById('my_modal_1').showModal()}>
+                            Upload Pic
+                        </button>
 
-      {/* Modal Section */}
-      <dialog id="my_modal_1" className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Upload Your Picture</h3>
-          
-          {/* File Input */}
-          <input type="file" accept="image/*" onChange={handleFileChange} className="file-input file-input-bordered w-full my-4" />
-          
-          {/* Image Preview */}
-          {preview && (
-            <div className="my-4">
-              <p className="text-sm">Image Preview:</p>
-              <img src={preview} alt="Profile Preview" className="w-12 h-2 object-cover rounded-full border-2 border-gray-300" />
-            </div>
-          )}
-          
-          {/* Upload Button */}
-          <div className='flex items-center justify-between'>
-          <button onClick={handleUpload} className="btn btn-primary mt-4">Upload</button>
-          <form method="dialog">
-              <button className="btn  mt-4">Close</button>
-            </form>
-            </div>
-          
-         
-        </div>
-      </dialog>
+                        {/* Modal Section */}
+                        <dialog id="my_modal_1" className="modal">
+                            <div className="modal-box">
+                                <h3 className="font-bold text-lg">Upload Your Picture</h3>
+
+                                {/* File Input */}
+                                <input type="file" accept="image/*" onChange={handleFileChange} className="file-input file-input-bordered w-full my-4" />
+
+                                {/* Image Preview */}
+                                {preview && (
+                                    <div className="my-4">
+                                        <p className="text-sm">Image Preview:</p>
+                                        <img src={preview} alt="Profile Preview" className="w-12 h-2 object-cover rounded-full border-2 border-gray-300" />
+                                    </div>
+                                )}
+
+                                {/* Upload Button */}
+                                <div className='flex items-center justify-between'>
+                                    <button onClick={handleUpload} className="btn btn-primary mt-4">{loader ? (<><span className="loading loading-bars loading-xs"></span> Uploading</>) : "Upload"} </button>
+                                    <form method="dialog">
+                                        <button className="btn  mt-4">Close</button>
+                                    </form>
+                                </div>
+
+
+                            </div>
+                        </dialog>
 
                     </div>
                     <div className="overflow-x-auto">
