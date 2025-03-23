@@ -1,12 +1,14 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
+import { motion, useAnimation } from 'framer-motion';
 const Userprofile = () => {
     const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState(null);
     const [preview, setPreview] = useState(null);
     const [loader, setloader] = useState(false);
     const [success, setsuccess] = useState(false)
+    const [totalFriend, settotalFriend] = useState('0')
 
     const [user, setuser] = useState(() => {
         const storedUser = localStorage.getItem('user');
@@ -15,10 +17,20 @@ const Userprofile = () => {
     // Get user from localStorage
 
     useEffect(() => {
+        
         if (!user) {
             navigate('/login');
         }
     }, [user, navigate]);
+    useEffect( ()=>{
+        const fetchFriend = async ()=>{
+            const response = await axios.post(`${import.meta.env.VITE_URL}/api/friend-requests/accepted`, { id: user._id });
+            console.log(response.data.data.length)
+            settotalFriend(response.data.data.length);
+        } 
+        fetchFriend()
+      
+    },[])
     // Handle file selection and create preview
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -32,6 +44,7 @@ const Userprofile = () => {
             reader.readAsDataURL(file);
         }
     };
+    
 
 
     // Handle image upload
@@ -74,6 +87,9 @@ const Userprofile = () => {
             alert(error.response?.data?.error || 'Failed to upload picture');
         }
     };
+
+
+    
     return (
         <>
 
@@ -142,8 +158,8 @@ const Userprofile = () => {
                                 </tr>
                                 {/* row 3 */}
                                 <tr>
-                                    <td>Brice Swyre</td>
-                                    <td>Tax Accountant</td>
+                                    <td>Location</td>
+                                    <td>Delhi</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -165,7 +181,7 @@ const Userprofile = () => {
                             </svg>
                         </div>
                         <div className="stat-title">Total Friends</div>
-                        <div className="stat-value text-primary">25.6K</div>
+                        <div className="stat-value text-primary">{totalFriend}</div>
                         <div className="stat-desc">21% more than last month</div>
                     </div>
 

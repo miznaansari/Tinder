@@ -16,6 +16,7 @@ import UserSearch from './components/UserSearch';
 import Userprofile from './components/Userprofile';
 import Chatbot from './components/Chatbot';
 import OnlineChecker from './components/OnlineChecker';
+import FindLocation from './components/FindLocation';
 
 function App() {
   const [userId, setUserId] = useState('');
@@ -94,6 +95,7 @@ const navigate = useNavigate();
       <Route path="/search" element={<UserSearch />} />
       <Route path="/profile" element={<Userprofile />} />
       <Route path="/chatbot" element={<Chatbot />} />
+      <Route path="/loc" element={<FindLocation />} />
     </Routes>
     </OnlineStatusProvider>
 
