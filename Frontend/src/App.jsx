@@ -27,6 +27,7 @@ const navigate = useNavigate();
   const socket = useRef(null);
 
   useEffect(() => {
+    
     socket.current = io(`${import.meta.env.VITE_URL}`);
     console.log(socket)
 
@@ -78,6 +79,7 @@ const navigate = useNavigate();
     
      <OnlineStatusProvider >
     <Navbar setCurrentPage={setCurrentPage}  />
+ 
     <OnlineNotification />
     {notification && <p className="absolutez-100 top-5 left-4 p-4 bg-blue-500 text-white rounded-lg shadow-lg">{notification}</p>}
 
@@ -87,7 +89,7 @@ const navigate = useNavigate();
       <Routes>
       <Route path="/login" element={ <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} setCurrentPage={setCurrentPage} />} />
       <Route path="/signup" element={<Signup setCurrentPage={setCurrentPage} />} />
-      <Route path="/" element={ <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />} />
+      <Route path="/" element={<>    <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} /> <FindLocation /></>} />
       <Route path="/friendlist" element={ <Acceptedfriendlist />} />
       <Route path="/chat" element={<Chat user={user} />} />
       <Route path="/Pendingrequest" element={<Pendingrequest />} />

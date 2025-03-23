@@ -3,12 +3,16 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
 import { motion, useAnimation } from 'framer-motion';
 const Userprofile = () => {
+
+   
+      
     const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState(null);
     const [preview, setPreview] = useState(null);
     const [loader, setloader] = useState(false);
     const [success, setsuccess] = useState(false)
     const [totalFriend, settotalFriend] = useState('0')
+    const [address, setaddress] = useState({})
 
     const [user, setuser] = useState(() => {
         const storedUser = localStorage.getItem('user');
@@ -87,7 +91,19 @@ const Userprofile = () => {
             alert(error.response?.data?.error || 'Failed to upload picture');
         }
     };
+//currentAdress
 
+useEffect(()=>{
+    const user = JSON.parse(localStorage.getItem('user'))
+    const handleCurrentAddress=async()=>{
+        const id = {userId:user._id}
+        const response = await axios.post(`${import.meta.env.VITE_URL}/api/fetchcurrentaddress`,id) 
+        console.log(response.data.currentAddress)
+        setaddress(response.data.currentAddress)
+        console.log(address)
+    }
+    handleCurrentAddress()
+},[])
 
     
     return (
@@ -217,6 +233,43 @@ const Userprofile = () => {
                         <div className="stat-desc text-secondary">31 tasks remaining</div>
                     </div>
                 </div></div>
+                <div className="card w-96 bg-base-100 mt-4 shadow">
+      <div className="card-body">
+        <span className="badge badge-lg badge-info">Current Address</span>
+        <div className="flex justify-between">
+          <h2 className="text-2xl font-bold">{address.city}, {address.state}</h2>
+        </div>
+        <ul className="mt-6 flex flex-col gap-2 text-xs">
+          <li>
+            <span className="font-bold">Road:</span> {address.road}
+          </li>
+          <li>
+            <span className="font-bold">City:</span> {address.city}
+          </li>
+          <li>
+            <span className="font-bold">State:</span> {address.state}
+          </li>
+          <li>
+            <span className="font-bold">State District:</span> {address.state_district}
+          </li>
+          <li>
+            <span className="font-bold">County:</span> {address.county}
+          </li>
+          <li>
+            <span className="font-bold">Postcode:</span> {address.postcode}
+          </li>
+          <li>
+            <span className="font-bold">Country:</span> {address.country} 
+          </li>
+          <li>
+            <span className="font-bold">ISO Code:</span> {address.ISO3166_2_lvl4}
+          </li>
+        </ul>
+        <div className="mt-6">
+          <button className="btn btn-primary btn-block">Update Address</button>
+        </div>
+      </div>
+    </div>
         </>
     )
 }

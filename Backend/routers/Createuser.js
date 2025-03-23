@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Users = require('../models/User');
 const multer = require('multer');
+const Address = require('../models/addressModel');
 
 // Configure Multer for image upload
 const storage = multer.diskStorage({
@@ -96,6 +97,65 @@ router.get('/users', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//storing user Current location
+router.post('/currentLocation', async (req, res) => {
+  try {
+    const { userId, city, state, state_district, county, postcode, road, country, country_code, ISO3166_2_lvl4 } = req.body;
+
+    // Validate if user exists
+    console.log(userId + " mizna");
+    const user = await Users.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update if userId exists, otherwise create a new one
+    const address = await Address.findOneAndUpdate(
+      { userId },
+      { 
+        userId,
+        city,
+        state,
+        state_district,
+        county,
+        postcode,
+        road,
+        country,
+        country_code,
+        ISO3166_2_lvl4
+      },
+      { new: true, upsert: true } // ✅ Create if not exists, return updated document
+    );
+
+    res.status(201).json({ message: 'Location saved or updated successfully', address });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to save or update location' });
+  }
+});
+
+
+
+router.post('/fetchcurrentaddress', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    // Find the address using findOne
+    const currentAddress = await Address.findOne({ userId: userId });
+
+    if (!currentAddress) {
+      return res.status(404).json({ success: false, message: 'Address not found' });
+    }
+
+    res.status(200).json({ success: true, currentAddress });
+  } catch (error) {
+    console.error('Error fetching address:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 
