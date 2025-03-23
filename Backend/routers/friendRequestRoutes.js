@@ -41,12 +41,13 @@ router.post('/send', async (req, res) => {
 
   // Real-Time Notification
   if (activeUsers.has(receiverId.toString())) {
+    const receivername = await User.findById(senderId).then(user => user.name);
     const receiverSocket = activeUsers.get(receiverId.toString());
     receiverSocket.emit('friendRequestNotification', {
-      message: `Your friend request to User ${receiverId} was send you request!`,
+      message: `Your friend request to User ${receivername} was send you request!`,
       receiverId,
     });
-    console.log(`Notification sent to User ${receiverId}`);
+    console.log(`Notification sent to User ${receivername}`);
   }
   res.status(201).json({ message: 'Friend request sent successfully' });
 });
@@ -102,9 +103,11 @@ console.log(id)
 
     // Send a notification to the sender
     if (activeUsers.has(senderId.toString())) {
+    const receivername = await User.findById(receiverId).then(user => user.name);
+
       const senderSocket = activeUsers.get(senderId.toString());
       senderSocket.emit('friendRequestNotification', {
-        message: `Your friend request to User ${receiverId} was accepted!`,
+        message: `Your friend request to User ${receivername} was accepted!`,
         receiverId,
       });
       console.log(`Notification sent to User ${senderId}`);

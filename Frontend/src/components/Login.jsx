@@ -44,7 +44,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       }
 
       setSuccessMessage('Login successful!');
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       setErrorMessage(error.response?.data?.error || error.message);
     } finally {
@@ -72,7 +72,7 @@ const Login = ({ setUser, setUserId, setIsLoggedIn, socket }) => {
       }
     setgoogleLoader(false)
 
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       console.error('Error during Google sign-in:', error);
     } finally {

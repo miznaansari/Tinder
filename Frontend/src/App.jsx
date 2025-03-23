@@ -51,6 +51,11 @@ const navigate = useNavigate();
     };
   }, []);
 
+  useEffect(()=>{
+    const theme = localStorage.getItem('theme')
+    document.documentElement.setAttribute('data-theme', theme)
+  },[])
+
   const handleLogout = () => {
     setUser(null);
     setUserId('');
@@ -81,7 +86,7 @@ const navigate = useNavigate();
       <Routes>
       <Route path="/login" element={ <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} setCurrentPage={setCurrentPage} />} />
       <Route path="/signup" element={<Signup setCurrentPage={setCurrentPage} />} />
-      <Route path="/home" element={ <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />} />
+      <Route path="/" element={ <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} />} />
       <Route path="/friendlist" element={ <Acceptedfriendlist />} />
       <Route path="/chat" element={<Chat user={user} />} />
       <Route path="/Pendingrequest" element={<Pendingrequest />} />

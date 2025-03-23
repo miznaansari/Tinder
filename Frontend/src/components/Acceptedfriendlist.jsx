@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router';
 import { useOnlineStatus } from './OnlineStatusContext';
 import { ClockFading } from 'lucide-react';
 import Chatbot from './Chatbot';
+import { motion } from 'framer-motion';
 
 const Acceptedfriendlist = () => {
   const [friends, setFriends] = useState([]);
@@ -11,6 +12,7 @@ const Acceptedfriendlist = () => {
   const navigate = useNavigate();
   const onlineUsers = useOnlineStatus();
   const [pendingRequest, setpendingRequest] = useState('')
+  const [noFriend, setnoFriend] = useState(false)
 
   useEffect(() => {
     const friendRequests = async () => {
@@ -38,6 +40,11 @@ const Acceptedfriendlist = () => {
             return item;
           });
           setFriends(response.data.data);
+          console.log(response.data.data.length + "adfds")
+          if (response.data.data.length === 0) {
+            setnoFriend(true);
+          }
+
         } else {
           console.error('Failed to fetch friends:', response.data.message);
         }
@@ -55,6 +62,7 @@ const Acceptedfriendlist = () => {
     navigate('/chat', { state: { sender: friend.sender, receiver: friend.receiver } });
   };
 
+
   return (
     <>
       <div className='flex justify-between items-center p-2 sticky top-20 bg-base-100'>
@@ -69,6 +77,16 @@ const Acceptedfriendlist = () => {
 
       <ul className="list bg-base-200 text-base-content rounded-box shadow-md w-full md:w-1/2 lg:w-1/3">
 
+        {noFriend && (
+          <motion.div role="alert" className="alert alert-info"   initial={{ opacity: 0, y: 80 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9 }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="h-6 w-6 shrink-0 stroke-current">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>You haven't added any friends yet. Start connecting with people!</span>
+          </motion.div>
+        )}
 
         {/* <li className="list-row" onClick={() => navigate('/chatbot')}>
           <div><img className="size-10 rounded-box " src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAdVBMVEX////5+Pzi4vKztuC0u+JpdclffM2prdxhdspVfM2cteLFxeZgbsdif85Yg9E6ftC2zeywq9tma8VThtJKitUphdWPvOfo4fHCtN5+bMNxb8ZsestFjNY8kdkmkdoil96bzO/X6/n2+v1RdMsRjdqw0u+dxOoXwiEkAAAAa0lEQVR4AdXLgxHAUAAD0NS27e6/YXEuMsB/5wACkyRwsgxOUcFpOijDtGwQjuv5QYhfUez5SZrln0IqyqpurrLt+mGc5ndZa/ex64ZPeTMWP227NcevMLi6DYTd3j+m7cHtO7hpAjfPENcJ+wwG2aDUGTgAAAAASUVORK5CYII=" /></div>

@@ -21,6 +21,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
   const [isSwiping, setIsSwiping] = useState(false);
   const [swipeComplete, setSwipeComplete] = useState(false);
   const [userdetail, setuser] = useState(localStorage.getItem('user'));
+  const [sendingLoader, setsendingLoader] = useState(false)
 
   const cardRef = useRef(null);
   const touchStartX = useRef(0);
@@ -64,6 +65,7 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
     if (!users[currentIndex]) return;
 
     if (direction === 'right') {
+      setsendingLoader(true)
       try {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (!storedUser || !storedUser._id) throw new Error('User not found');
@@ -73,7 +75,11 @@ const TinderPage = ({ userId, user, socket, onLogout, notification }) => {
 
         await axios.post(`${import.meta.env.VITE_URL}/api/friend-requests/send`, { senderId, receiverId });
         showToast(`Friend request sent to ${users[currentIndex].name}`);
+      setsendingLoader(false)
+
       } catch (error) {
+      setsendingLoader(false)
+
         showToast(error?.response?.data?.error || 'Error sending friend request', 'error');
       }
     }
@@ -155,7 +161,6 @@ const userdetailname = JSON.parse( userdetail)
         </div>
       )}
 
-      {notification && <p className="absolute top-5 left-4 p-4 bg-blue-500 text-white rounded-lg shadow-lg">{notification}</p>}
 
       <div
         ref={cardRef}
@@ -191,7 +196,7 @@ const userdetailname = JSON.parse( userdetail)
           </>
         ) : (
           <>
-            <button onClick={() => handleSwipe('right')} className="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600">❤️</button>
+            <button onClick={() => handleSwipe('right')} className="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600">{sendingLoader?<span className="loading loading-spinner loading-xs"></span>:"❤️"} </button>
 
             <button onClick={() => handleSwipe('left')} className="bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600">❌</button>
           </>

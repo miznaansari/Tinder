@@ -20,7 +20,7 @@ const Navbar = () => {
     <div className="card w-full bg-base-200 shadow-xl sticky top-0 z-100" style={{"borderRadius":"0px"}}>
       <div className="card-body flex flex-row justify-between items-center" style={{"borderRadius":"0px"}}>
         <div className="flex space-x-4 items-center">
-        <Link to="/home" className="font-bold text-base-content">Home</Link>
+        <Link to="/" className="font-bold text-base-content">Home</Link>
           {!user ? (
             <>
               <Link to="/login" className="font-bold text-base-content">Login</Link>
