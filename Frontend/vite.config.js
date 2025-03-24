@@ -14,6 +14,7 @@ export default defineConfig({
     host: true,
     port: 3000,
     open: true,
-    allowedHosts: ['tinder-1-an6v.onrender.com'],
+    allowedHosts: ['tinder-1-an6v.onrender.com', 'chatwithfriend.onrender.com']
+
   },
 });
