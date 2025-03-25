@@ -88,14 +88,14 @@ const Acceptedfriendlist = () => {
           </motion.div>
         )}
 
-        {/* <li className="list-row" onClick={() => navigate('/chatbot')}>
+        <li className="list-row" onClick={() => navigate('/train')}>
           <div><img className="size-10 rounded-box " src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAdVBMVEX////5+Pzi4vKztuC0u+JpdclffM2prdxhdspVfM2cteLFxeZgbsdif85Yg9E6ftC2zeywq9tma8VThtJKitUphdWPvOfo4fHCtN5+bMNxb8ZsestFjNY8kdkmkdoil96bzO/X6/n2+v1RdMsRjdqw0u+dxOoXwiEkAAAAa0lEQVR4AdXLgxHAUAAD0NS27e6/YXEuMsB/5wACkyRwsgxOUcFpOijDtGwQjuv5QYhfUez5SZrln0IqyqpurrLt+mGc5ndZa/ex64ZPeTMWP227NcevMLi6DYTd3j+m7cHtO7hpAjfPENcJ+wwG2aDUGTgAAAAASUVORK5CYII=" /></div>
           <div>
             <div>Gemini AI</div>
             <div className="text-xs uppercase font-semibold opacity-60">Chat with Gemini AI</div>
           </div>
 
-        </li> */}
+        </li>
 
         {loading ? (
           Array.from({ length: 5 }).map((_, index) => (
