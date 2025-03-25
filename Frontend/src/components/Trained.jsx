@@ -10,6 +10,10 @@ const Trained = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user?.email) {
+      setEmail(user.email);
+    }
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
@@ -24,9 +28,10 @@ const Trained = () => {
 
   const sendMessage = async () => {
     setLoading(true);
-    const storedEmail = localStorage.getItem('userEmail');
+    const storedEmail = email || localStorage.getItem('userEmail');
     if (!storedEmail) {
       alert('Please provide your email first.');
+      setLoading(false);
       return;
     }
     if (!message.trim()) return;
@@ -40,30 +45,11 @@ const Trained = () => {
       const botResponse = { sender: 'Bot', message: res.data.response };
 
       setMessages((prev) => [...prev, newMessage, botResponse]);
-    setLoading(false);
-
+      setLoading(false);
       setMessage('');
     } catch (error) {
-    setLoading(false);
-
+      setLoading(false);
       console.error('Error sending message:', error);
-    }
-  };
-
-  const sendFeedback = async (msg) => {
-    const feedback = feedbacks[msg] || '';
-    if (!feedback.trim()) return;
-
-    try {
-      await axios.post('http://127.0.0.1:5000/feedback', {
-        message: msg,
-        correct_response: feedback,
-        email: localStorage.getItem('userEmail'),
-      });
-      alert('Feedback submitted!');
-      setFeedbacks((prev) => ({ ...prev, [msg]: '' }));
-    } catch (error) {
-      console.error('Error sending feedback:', error);
     }
   };
 
@@ -78,27 +64,25 @@ const Trained = () => {
     <div className="flex flex-col w-full bg-base-200 text-white p-4 mb-10">
       <h2 className="text-2xl font-bold mb-4 text-base-content">Trained Chatbot</h2>
 
-      {/* Email Input */}
-      <div className="mb-4">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email..."
-          className="input input-bordered mr-2"
-        />
-        <button onClick={saveEmail} className="btn btn-primary">Save Email</button>
-      </div>
+      {/* Hide email input if email is set */}
+      {!email && (
+        <div className="mb-4">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email..."
+            className="input input-bordered mr-2"
+          />
+          <button onClick={saveEmail} className="btn btn-primary">Save Email</button>
+        </div>
+      )}
 
       <div className="flex-1 overflow-auto bg-base-200 p-4 rounded-lg shadow-md mb-4">
         {messages.map((msg, index) => (
           <div key={index} className={`chat ${msg.sender === 'You' ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-header text-base-content">{msg.sender}</div>
             <div className="chat-bubble">{msg.message}</div>
-            {msg.sender === 'Bot' && (
-              <div className="mt-2">
-              </div>
-            )}
           </div>
         ))}
         <div ref={messagesEndRef}></div>
@@ -113,7 +97,9 @@ const Trained = () => {
           placeholder="Type a message..."
           className="p-2 border w-8/10 text-base-content bg-base-200 border border-base-900 rounded-lg"
         />
-        <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg fixed bottom-3 w-2/10 right-0 ml-2">{!loading?"Send":<span className="loading loading-spinner loading-xs"></span>}</button>
+        <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg fixed bottom-3 w-2/10 right-0 ml-2">
+          {!loading ? 'Send' : <span className="loading loading-spinner loading-xs"></span>}
+        </button>
       </div>
     </div>
   );

@@ -8,14 +8,17 @@ const socket = io(`${import.meta.env.VITE_URL}`);
 const Chat = () => {
   const location = useLocation();
   const { sender, receiver } = location.state || {};
-  
+
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [showAllMessages, setShowAllMessages] = useState(false);
   const messagesEndRef = useRef(null);
-  const [loader, setloader] = useState(false)
+  const [loader, setLoader] = useState(false);
+  const [summary, setSummary] = useState('');
+  const [customPrompt, setCustomPrompt] = useState('');
 
   useEffect(() => {
+    console.log(sender)
     if (!sender || !receiver) {
       console.error('Sender or Receiver information is missing');
       return;
@@ -23,7 +26,7 @@ const Chat = () => {
     const user = JSON.parse(localStorage.getItem('user'));
 
     socket.connect();
-    socket.emit('userConnected', user._id,user.name);
+    socket.emit('userConnected', user._id, user.name);
 
     axios.post(`${import.meta.env.VITE_URL}/api/chat/messages`, {
       senderId: sender._id,
@@ -52,17 +55,18 @@ const Chat = () => {
   }, [messages]);
 
   const sendMessage = async () => {
-    setloader(true);
+    setLoader(true);
     if (!message.trim()) return;
 
     const user = JSON.parse(localStorage.getItem('user'));
-    const senderid = user._id === receiver._id ? receiver._id : sender._id;
-    const receiverid = user._id === receiver._id ? sender._id : receiver._id;
+    const senderId = user._id === receiver._id ? receiver._id : sender._id;
+    const receiverId = user._id === receiver._id ? sender._id : receiver._id;
 
     const newMessage = {
-      senderId: senderid,
-      receiverId: receiverid,
+      senderId,
+      receiverId,
       message,
+      timestamp: new Date().toISOString(),
     };
 
     try {
@@ -70,8 +74,7 @@ const Chat = () => {
       socket.emit('sendMessage', newMessage);
       setMessages((prev) => [...prev, newMessage]);
       setMessage('');
-    setloader(false);
-
+      setLoader(false);
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -84,53 +87,67 @@ const Chat = () => {
     }
   };
 
+  const generateSummary = async () => {
+    try {
+      const response = await axios.post(`https://chatbot-onvb.onrender.com/generate-summary`, {
+        senderId: sender._id,
+        receiverId: receiver._id,
+        customPrompt: customPrompt || 'Summarize the following conversation',
+      });
+      setSummary(response.data.summary);
+    } catch (error) {
+      console.error('Error generating summary:', error);
+      setSummary('Failed to generate summary.');
+    }
+  };
+
   const visibleMessages = showAllMessages ? messages : messages.slice(-15);
 
   return (
-    <div className="flex flex-col w-full md:w-1/3  lg:h-screen bg-base-200 text-white p-4 mb-10">
-      <h2 className="text-2xl font-bold mb-4 text-base-content">Chat with {receiver?.name}</h2>
+    <div className="flex flex-col w-full md:w-1/3 lg:h-screen pb-10 bg-base-200 text-white p-4">
+      <h2 className="text-2xl font-bold mb-4">Chat with {receiver?.name}</h2>
+      <input
+        type="text"
+        value={customPrompt}
+        onChange={(e) => setCustomPrompt(e.target.value)}
+        placeholder="Enter your custom prompt"
+        className="input input-bordered mb-4"
+      />
+      <button onClick={generateSummary} className="btn btn-success mb-4">Generate Chat Summary</button>
+      {summary && <div className="alert alert-info mb-4">{summary}</div>}
       {messages.length > 15 && !showAllMessages && (
-        <button 
-          onClick={() => setShowAllMessages(true)} 
-          className="mb-2 text-blue-500 underline"
-        >
-          View Past Messages
-        </button>
+        <button onClick={() => setShowAllMessages(true)} className="link mb-4">View Past Messages</button>
       )}
-      <div className="flex-1 overflow-auto bg-base-200 p-4 rounded-lg shadow-md mb-4 ">
+      <div className="flex-1 overflow-auto p-4 rounded-lg">
         {visibleMessages.map((msg, index) => (
           <div key={index} className={`chat ${msg.senderId === sender._id ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-image avatar">
               <div className="w-10 rounded-full">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="avatar" />
+                <img src={msg.senderId === sender._id ? "https://tinder-g832.onrender.com"+sender.profilePicture : "https://tinder-g832.onrender.com"+receiver.profilePicture} alt="avatar"/>
               </div>
             </div>
-            <div className="chat-header text-base-content">
-              {msg.senderId === sender._id ? 'You' : receiver?.name}
-              <time className="text-xs text-base-content opacity-50">{new Date().toLocaleTimeString()}</time>
+            <div className="chat-header">
+              {msg.senderId === sender._id ? 'You' : receiver?.name} - {new Date(msg.timestamp).toLocaleTimeString()}
             </div>
-            <div className="chat-bubble ">{msg.message}</div>
-            <div className="chat-footer opacity-50 text-base-content">{msg.senderId === sender._id ? 'Delivered' : 'Seen'}</div>
+            <div className="chat-bubble">{msg.message}</div>
           </div>
         ))}
         <div ref={messagesEndRef}></div>
       </div>
-      <div className="flex items-center gap-2">
-        
-      </div>
-      <div className='flex bg-base-200 fixed bottom-0 p-3 left-0  w-full'>
-      <input
+      <div className="flex gap-2 mt-4 fixed bottom-0 pb-2 w-full left-0 bg-base-200">
+        <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className=" p-2 border w-8/10 text-base-content bg-base-200 border border-base-900 rounded-lg"
+          className="input input-bordered flex-grow"
         />
-      <button onClick={sendMessage} className="bg-blue-500 text-white px-4 py-2 rounded-lg fixed bottom-3 w-2/10 right-0 ml-2  ">{loader?(<span className="loading loading-spinner loading-xs"></span>):'Send'} </button>
+        <button onClick={sendMessage} className="btn btn-primary">
+          {loader ? <span className="loading loading-spinner loading-xs"></span> : 'Send'}
+        </button>
       </div>
     </div>
-    
   );
 };
 
