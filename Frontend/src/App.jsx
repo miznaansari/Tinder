@@ -91,7 +91,7 @@ const navigate = useNavigate();
       <Routes>
       <Route path="/login" element={ <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} setCurrentPage={setCurrentPage} />} />
       <Route path="/signup" element={<Signup setCurrentPage={setCurrentPage} />} />
-      <Route path="/hero" element={<>    <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} /> <FindLocation /></>} />
+      <Route path="/home" element={<>    <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} /> <FindLocation /></>} />
       <Route path="/friendlist" element={ <Acceptedfriendlist />} />
       <Route path="/chat" element={<Chat user={user} />} />
       <Route path="/" element={<Hero />} />
