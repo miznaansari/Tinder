@@ -14,6 +14,7 @@ const Chat = () => {
   const [showAllMessages, setShowAllMessages] = useState(false);
   const messagesEndRef = useRef(null);
   const [loader, setLoader] = useState(false);
+  const [chatloader, setchatLoader] = useState(false);
   const [summary, setSummary] = useState('');
   const [customPrompt, setCustomPrompt] = useState('');
 
@@ -89,13 +90,18 @@ const Chat = () => {
 
   const generateSummary = async () => {
     try {
+      setchatLoader(true)
       const response = await axios.post(`https://chatbot-onvb.onrender.com/generate-summary`, {
         senderId: sender._id,
         receiverId: receiver._id,
         customPrompt: customPrompt || 'Summarize the following conversation',
       });
       setSummary(response.data.summary);
+      setchatLoader(false)
+
     } catch (error) {
+      setchatLoader(false)
+
       console.error('Error generating summary:', error);
       setSummary('Failed to generate summary.');
     }
@@ -113,7 +119,7 @@ const Chat = () => {
         placeholder="Enter your custom prompt"
         className="input input-bordered mb-4"
       />
-      <button onClick={generateSummary} className="btn btn-success mb-4">Generate Chat Summary</button>
+      <button onClick={generateSummary} className="btn btn-success mb-4"> {chatloader?(<><span className="loading loading-dots loading-xs"></span> Waiting for Response</>):"Generate Chat Summary"}</button>
       {summary && <div className="alert alert-info mb-4">{summary}</div>}
       {messages.length > 15 && !showAllMessages && (
         <button onClick={() => setShowAllMessages(true)} className="link mb-4">View Past Messages</button>
