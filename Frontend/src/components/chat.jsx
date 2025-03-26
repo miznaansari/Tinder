@@ -104,8 +104,8 @@ const Chat = () => {
   const visibleMessages = showAllMessages ? messages : messages.slice(-15);
 
   return (
-    <div className="flex flex-col w-full md:w-1/3 lg:h-screen pb-10 bg-base-200 text-white p-4">
-      <h2 className="text-2xl font-bold mb-4">Chat with {receiver?.name}</h2>
+    <div className="flex flex-col w-full md:w-1/3 lg:h-screen pb-10 bg-base-200 text-base-content p-1">
+      <h2 className="text-2xl text-base-content font-bold mb-4">Chat with {receiver?.name}</h2>
       <input
         type="text"
         value={customPrompt}
@@ -134,16 +134,16 @@ const Chat = () => {
         ))}
         <div ref={messagesEndRef}></div>
       </div>
-      <div className="flex gap-2 mt-4 fixed bottom-0 pb-2 w-full left-0 bg-base-200">
+      <div className="flex gap-2 items-center mt-4 fixed bottom-0 pb-2 w-full left-0 bg-base-200">
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="input input-bordered flex-grow"
+          className="input input-bordered p-5 flex-grow"
         />
-        <button onClick={sendMessage} className="btn btn-primary">
+        <button onClick={sendMessage} className="btn btn-primary p-5">
           {loader ? <span className="loading loading-spinner loading-xs"></span> : 'Send'}
         </button>
       </div>

@@ -18,6 +18,7 @@ import Chatbot from './components/Chatbot';
 import OnlineChecker from './components/OnlineChecker';
 import FindLocation from './components/FindLocation';
 import Trained from './components/Trained';
+import Hero from './components/Hero';
 
 function App() {
   const [userId, setUserId] = useState('');
@@ -90,9 +91,10 @@ const navigate = useNavigate();
       <Routes>
       <Route path="/login" element={ <Login setUser={setUser} setUserId={setUserId} setIsLoggedIn={setIsLoggedIn} socket={socket} setCurrentPage={setCurrentPage} />} />
       <Route path="/signup" element={<Signup setCurrentPage={setCurrentPage} />} />
-      <Route path="/" element={<>    <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} /> <FindLocation /></>} />
+      <Route path="/hero" element={<>    <TinderPage userId={userId} user={user} socket={socket} onLogout={handleLogout} notification={notification} /> <FindLocation /></>} />
       <Route path="/friendlist" element={ <Acceptedfriendlist />} />
       <Route path="/chat" element={<Chat user={user} />} />
+      <Route path="/" element={<Hero />} />
       <Route path="/Pendingrequest" element={<Pendingrequest />} />
       <Route path="/Online" element={<OnlineNotification />} />
       <Route path="/search" element={<UserSearch />} />
