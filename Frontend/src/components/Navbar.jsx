@@ -75,7 +75,7 @@ const Navbar = () => {
           )}
         </div>
 
-        <Link to="/">   
+        <Link to="/home">   
           <h1 className="text-lg md:text-2xl font-bold">ChatWithFriend</h1>
         </Link>
 
