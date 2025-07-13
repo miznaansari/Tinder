@@ -81,9 +81,21 @@ const navigate = useNavigate();
     
      <OnlineStatusProvider >
     <Navbar setCurrentPage={setCurrentPage}  />
+
+
+    {notification  &&
+      <div className="toast toast-end">
+  {/* <div className="alert alert-info">
+    <span>New mail arrived.</span>
+  </div> */}
+  <div className="alert alert-success">
+    <span>{notification}</span>
+  </div>
+</div>
+    }
  
     <OnlineNotification />
-    {notification && <p className="absolutez-100 top-5 left-4 p-4 bg-blue-500 text-white rounded-lg shadow-lg">{notification}</p>}
+    {/* {notification && <p className="absolutez-100 top-5 left-4 p-4 bg-blue-500 text-white rounded-lg shadow-lg">{notification}</p>} */}
 
     <OnlineChecker />
 

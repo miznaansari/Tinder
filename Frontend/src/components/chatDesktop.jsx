@@ -5,9 +5,9 @@ import { useLocation } from 'react-router';
 
 const socket = io(`${import.meta.env.VITE_URL}`);
 
-const Chat = () => {
-  const location = useLocation();
-  const { sender, receiver } = location.state || {};
+const ChatDesktop = ({sender, receiver}) => {
+  // const location = useLocation();
+  // const { sender, receiver } = location.state || {};
 
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
@@ -110,8 +110,10 @@ const Chat = () => {
   const visibleMessages = showAllMessages ? messages : messages.slice(-15);
 
   return (
-    <div className="flex flex-col w-full md:w-1/3 lg:h-screen pb-10 bg-base-200 text-base-content p-1">
+    <div className="flex flex-col w-full pb-10 bg-base-200 text-base-content p-1  relative h-[80dvh] overflow-auto">
       <h2 className="text-2xl text-base-content font-bold mb-4">Chat with {receiver?.name}</h2>
+      <div className='flex justify-between'>
+        <div className='flex items-center justify-center'>
       <input
         type="text"
         value={customPrompt}
@@ -120,10 +122,12 @@ const Chat = () => {
         className="input input-bordered mb-4"
       />
       <button onClick={generateSummary} className="btn btn-success mb-4"> {chatloader?(<><span className="loading loading-dots loading-xs"></span> Waiting for Response</>):"Generate Chat Summary"}</button>
-      {summary && <div className="alert alert-info mb-4">{summary}</div>}
+     </div>    {summary && <div className="alert alert-info mb-4">{summary}</div>}
       {messages.length > 15 && !showAllMessages && (
         <button onClick={() => setShowAllMessages(true)} className="link mb-4">View Past Messages</button>
       )}
+      </div>
+   
       <div className="flex-1 overflow-auto p-4 rounded-lg">
         {visibleMessages.map((msg, index) => (
           <div key={index} className={`chat ${msg.senderId === sender._id ? 'chat-end' : 'chat-start'}`}>
@@ -140,7 +144,7 @@ const Chat = () => {
         ))}
         <div ref={messagesEndRef}></div>
       </div>
-      <div className="flex gap-2 items-center mt-4 fixed bottom-0 pb-2 w-full left-0 bg-base-200">
+      <div className="flex gap-2 items-center mt-4 absolute bottom-0 pb-2 w-full left-0 bg-base-200">
         <input
           type="text"
           value={message}
@@ -157,4 +161,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default ChatDesktop;
