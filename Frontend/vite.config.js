@@ -1,12 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
-
+import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [
-    tailwindcss(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -18,7 +16,7 @@ export default defineConfig({
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
-        theme_color: '#0ea5e9', // Tailwind 'sky-500'
+        theme_color: '#0ea5e9',
         icons: [
           {
             src: '/pwa-192x192.png',
@@ -37,9 +35,9 @@ export default defineConfig({
             purpose: 'any maskable',
           },
         ],
-      }
-    })
-    ,
+      },
+    }),
+    tailwindcss(),
   ],
   resolve: {
     alias: {
@@ -50,6 +48,6 @@ export default defineConfig({
     host: true,
     port: 3000,
     open: true,
-    allowedHosts: ['tinder-1-an6v.onrender.com', 'chatwithfriend.onrender.com'],
+    // remove allowedHosts unless really needed
   },
 });
