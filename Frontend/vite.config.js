@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'Chatwithfriend',
         short_name: 'ChatFriend',
@@ -48,6 +48,6 @@ export default defineConfig({
     host: true,
     port: 3000,
     open: true,
-    // remove allowedHosts unless really needed
+      allowedHosts: ['tinder-1-an6v.onrender.com', 'chatwithfriend.onrender.com']
   },
 });
