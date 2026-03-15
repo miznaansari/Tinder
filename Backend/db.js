@@ -5,7 +5,7 @@ const connectDB = async () => {
   try {
     console.log('MongoDB connecteing');
 
-    await mongoose.connect('', {
+    await mongoose.connect('mongodb+srv://miznaansari:2sAc7wuwKHHzfnoh@mizna.jfncd.mongodb.net/Tinder?retryWrites=true&w=majority&appName=Mizna', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
