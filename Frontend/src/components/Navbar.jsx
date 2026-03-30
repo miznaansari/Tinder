@@ -77,7 +77,7 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 border-b border-base-300/60 bg-base-100/90 backdrop-blur-xl">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
 
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 md:px-6">
+      <div className="relative mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-3 md:px-6">
         <div className="flex items-center gap-2 md:gap-3">
           <button
             type="button"
@@ -88,14 +88,14 @@ const Navbar = () => {
             <FiMenu className="text-lg" />
           </button>
 
-          <Link to="/home" className="group inline-flex items-center gap-3">
+          <Link to="/home" className="group inline-flex items-center gap-2 md:gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-primary to-secondary text-primary-content shadow-md shadow-primary/25 transition-all duration-300 group-hover:scale-105 group-hover:rotate-3">
               <FaTelegramPlane className="text-sm" />
             </span>
 
             <div className="leading-none">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-base-content/50">Social Hub</p>
-              <p className="text-base font-extrabold tracking-tight md:text-xl">ChatWithFriend</p>
+              <p className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-base-content/50 sm:block">Social Hub</p>
+              <p className="text-sm font-extrabold tracking-tight sm:text-base md:text-xl">ChatWithFriend</p>
             </div>
           </Link>
         </div>
@@ -118,7 +118,7 @@ const Navbar = () => {
           )}
         </nav>
 
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
           {user && (
             <>
               <button
@@ -141,7 +141,7 @@ const Navbar = () => {
 
               <Link
                 to="/friendlist"
-                className={actionBtnClass}
+                className={`${actionBtnClass} hidden sm:inline-flex`}
                 aria-label="Open friend list"
               >
                 <FaTelegramPlane className="text-base" />
@@ -170,6 +170,32 @@ const Navbar = () => {
           >
             Home
           </Link>
+
+          {user && (
+            <>
+              <button
+                type="button"
+                onClick={() => handleNavigate('/search')}
+                className={`mt-1 block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold transition-colors ${pathname === '/search' ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}`}
+              >
+                Search
+              </button>
+              <button
+                type="button"
+                onClick={() => handleNavigate('/profile')}
+                className={`mt-1 block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold transition-colors ${pathname === '/profile' ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}`}
+              >
+                Profile
+              </button>
+              <Link
+                to="/friendlist"
+                className={`mt-1 block rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${pathname === '/friendlist' ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}`}
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                Friend List
+              </Link>
+            </>
+          )}
 
           {!user ? (
             <>
