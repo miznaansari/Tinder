@@ -1,40 +1,39 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
-import { useLocation } from 'react-router';
 
 const socket = io(`${import.meta.env.VITE_URL}`);
 
-const ChatDesktop = ({sender, receiver}) => {
-  // const location = useLocation();
-  // const { sender, receiver } = location.state || {};
-
+const ChatDesktop = ({ sender, receiver }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [showAllMessages, setShowAllMessages] = useState(false);
   const messagesEndRef = useRef(null);
   const [loader, setLoader] = useState(false);
-  const [chatloader, setchatLoader] = useState(false);
+  const [chatLoader, setChatLoader] = useState(false);
   const [summary, setSummary] = useState('');
   const [customPrompt, setCustomPrompt] = useState('');
 
   useEffect(() => {
-    console.log(sender)
     if (!sender || !receiver) {
-      console.error('Sender or Receiver information is missing');
       return;
     }
+
     const user = JSON.parse(localStorage.getItem('user'));
+    if (!user?._id) {
+      return;
+    }
 
     socket.connect();
     socket.emit('userConnected', user._id, user.name);
 
-    axios.post(`${import.meta.env.VITE_URL}/api/chat/messages`, {
-      senderId: sender._id,
-      receiverId: receiver._id,
-    })
-    .then(res => setMessages(res.data.messages))
-    .catch(err => console.error('Error fetching messages:', err));
+    axios
+      .post(`${import.meta.env.VITE_URL}/api/chat/messages`, {
+        senderId: sender._id,
+        receiverId: receiver._id,
+      })
+      .then((res) => setMessages(res.data.messages))
+      .catch(() => setMessages([]));
 
     socket.on('receiveMessage', (data) => {
       if (
@@ -47,7 +46,7 @@ const ChatDesktop = ({sender, receiver}) => {
 
     return () => {
       socket.off('receiveMessage');
-      socket.disconnect();   
+      socket.disconnect();
     };
   }, [sender, receiver]);
 
@@ -56,10 +55,18 @@ const ChatDesktop = ({sender, receiver}) => {
   }, [messages]);
 
   const sendMessage = async () => {
+    if (!message.trim()) {
+      return;
+    }
+
     setLoader(true);
-    if (!message.trim()) return;
 
     const user = JSON.parse(localStorage.getItem('user'));
+    if (!user?._id) {
+      setLoader(false);
+      return;
+    }
+
     const senderId = user._id === receiver._id ? receiver._id : sender._id;
     const receiverId = user._id === receiver._id ? sender._id : receiver._id;
 
@@ -75,9 +82,10 @@ const ChatDesktop = ({sender, receiver}) => {
       socket.emit('sendMessage', newMessage);
       setMessages((prev) => [...prev, newMessage]);
       setMessage('');
+    } catch {
+      // Keep UI stable on send failure.
+    } finally {
       setLoader(false);
-    } catch (error) {
-      console.error('Error sending message:', error);
     }
   };
 
@@ -90,50 +98,71 @@ const ChatDesktop = ({sender, receiver}) => {
 
   const generateSummary = async () => {
     try {
-      setchatLoader(true)
+      setChatLoader(true);
       const response = await axios.post(`https://chatbot-onvb.onrender.com/generate-summary`, {
         senderId: sender._id,
         receiverId: receiver._id,
         customPrompt: customPrompt || 'Summarize the following conversation',
       });
       setSummary(response.data.summary);
-      setchatLoader(false)
-
-    } catch (error) {
-      setchatLoader(false)
-
-      console.error('Error generating summary:', error);
+    } catch {
       setSummary('Failed to generate summary.');
+    } finally {
+      setChatLoader(false);
     }
   };
 
   const visibleMessages = showAllMessages ? messages : messages.slice(-15);
+  const avatarFor = (id) => {
+    if (id === sender?._id) {
+      return sender?.profilePicture ? `${import.meta.env.VITE_URL}${sender.profilePicture}` : 'https://via.placeholder.com/64';
+    }
+
+    return receiver?.profilePicture ? `${import.meta.env.VITE_URL}${receiver.profilePicture}` : 'https://via.placeholder.com/64';
+  };
 
   return (
-    <div className="flex flex-col w-full pb-10 bg-base-200 text-base-content p-1  relative h-[80dvh] overflow-auto">
-      <h2 className="text-2xl text-base-content font-bold mb-4">Chat with {receiver?.name}</h2>
-      <div className='flex justify-between'>
-        <div className='flex items-center justify-center'>
-      <input
-        type="text"
-        value={customPrompt}
-        onChange={(e) => setCustomPrompt(e.target.value)}
-        placeholder="Enter your custom prompt"
-        className="input input-bordered mb-4"
-      />
-      <button onClick={generateSummary} className="btn btn-success mb-4"> {chatloader?(<><span className="loading loading-dots loading-xs"></span> Waiting for Response</>):"Generate Chat Summary"}</button>
-     </div>    {summary && <div className="alert alert-info mb-4">{summary}</div>}
-      {messages.length > 15 && !showAllMessages && (
-        <button onClick={() => setShowAllMessages(true)} className="link mb-4">View Past Messages</button>
-      )}
+    <div className="relative flex h-[78dvh] w-full flex-col overflow-hidden bg-base-200 text-base-content">
+      <div className="border-b border-base-300/70 bg-base-100 p-3">
+        <h2 className="text-lg font-extrabold tracking-tight">Chat with {receiver?.name}</h2>
+        <p className="text-xs uppercase tracking-wide text-base-content/55">Desktop conversation panel</p>
       </div>
-   
-      <div className="flex-1 overflow-auto p-4 rounded-lg">
+
+      <div className="flex flex-col gap-2 border-b border-base-300/60 bg-base-100/80 p-3">
+        <div className="flex flex-col gap-2 lg:flex-row">
+          <input
+            type="text"
+            value={customPrompt}
+            onChange={(e) => setCustomPrompt(e.target.value)}
+            placeholder="Enter custom summary prompt"
+            className="input input-bordered h-11 w-full text-base"
+          />
+          <button onClick={generateSummary} className="btn btn-success h-11 px-4 lg:w-auto">
+            {chatLoader ? (
+              <>
+                <span className="loading loading-dots loading-xs" /> Waiting...
+              </>
+            ) : (
+              'Generate Summary'
+            )}
+          </button>
+        </div>
+
+        {summary && <div className="alert alert-info text-sm">{summary}</div>}
+
+        {messages.length > 15 && !showAllMessages && (
+          <button onClick={() => setShowAllMessages(true)} className="link text-sm">
+            View Past Messages
+          </button>
+        )}
+      </div>
+
+      <div className="flex-1 space-y-2 overflow-auto p-4">
         {visibleMessages.map((msg, index) => (
-          <div key={index} className={`chat ${msg.senderId === sender._id ? 'chat-end' : 'chat-start'}`}>
+          <div key={msg._id || `${msg.timestamp}-${index}`} className={`chat ${msg.senderId === sender._id ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-image avatar">
               <div className="w-10 rounded-full">
-                <img src={msg.senderId === sender._id ? "https://tinder-g832.onrender.com"+sender.profilePicture : "https://tinder-g832.onrender.com"+receiver.profilePicture} alt="avatar"/>
+                <img src={avatarFor(msg.senderId)} alt="avatar" />
               </div>
             </div>
             <div className="chat-header">
@@ -142,20 +171,24 @@ const ChatDesktop = ({sender, receiver}) => {
             <div className="chat-bubble">{msg.message}</div>
           </div>
         ))}
-        <div ref={messagesEndRef}></div>
+        <div ref={messagesEndRef} />
       </div>
-      <div className="flex gap-2 items-center mt-4 absolute bottom-0 pb-2 w-full left-0 bg-base-200">
+
+      <div className="border-t border-base-300/60 bg-base-100 p-3">
+        <div className="flex items-center gap-2">
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="input input-bordered p-5 flex-grow"
+          className="input input-bordered h-12 flex-grow text-base"
         />
-        <button onClick={sendMessage} className="btn btn-primary p-5">
-          {loader ? <span className="loading loading-spinner loading-xs"></span> : 'Send'}
+
+        <button onClick={sendMessage} className="btn btn-primary h-12 px-5 text-base">
+          {loader ? <span className="loading loading-spinner loading-xs" /> : 'Send'}
         </button>
+        </div>
       </div>
     </div>
   );
