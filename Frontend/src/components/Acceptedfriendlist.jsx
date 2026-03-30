@@ -61,16 +61,18 @@ const Acceptedfriendlist = () => {
   const [open, setOpen] = useState(false)
   const [sender, setSender] = useState(null)
   const [receiver, setReceiver] = useState(null)
+  const [selectedFriendId, setSelectedFriendId] = useState(null);
 
-const handleChat = (friend) => {
-  if (window.innerWidth <= 768) {
-    navigate('/chat', { state: { sender: friend.sender, receiver: friend.receiver } });
-  } else {
-    setOpen(true);
-    setSender(friend.sender);
-    setReceiver(friend.receiver);
-  }
-};
+  const handleChat = (friend) => {
+    setSelectedFriendId(friend._id); // mark as selected
+    if (window.innerWidth <= 768) {
+      navigate('/chat', { state: { sender: friend.sender, receiver: friend.receiver } });
+    } else {
+      setOpen(true);
+      setSender(friend.sender);
+      setReceiver(friend.receiver);
+    }
+  };
 
 
   const [height, setHeight] = useState(window.innerHeight);
@@ -98,7 +100,7 @@ const handleChat = (friend) => {
           </div> </Link>
         </div>
         <div className={`flex w-full h-[80dvh] overflow-hidden`}>
-        <ul className="list bg-base-200 text-base-content w-full sm:w-full md:w-1/3 lg:w-1/3 rounded-box shadow-md sticky top-0 h-[80dvh] overflow-auto">
+          <ul className="list bg-base-200 text-base-content w-full sm:w-full md:w-1/3 lg:w-1/3 rounded-box shadow-md sticky top-0 h-[80dvh] overflow-auto">
 
 
             {noFriend && (
@@ -133,7 +135,13 @@ const handleChat = (friend) => {
 
               friends.map((friend) => (
                 <>
-                  <li key={friend._id} className="list-row cursor-pointer hover:bg-base-300 p-2 rounded-md" onClick={() => handleChat(friend)}>
+                  <li
+                    key={friend._id}
+                    className={`list-row cursor-pointer hover:bg-base-300 p-2 rounded-md ${selectedFriendId === friend._id ? 'bg-primary text-white' : ''
+                      }`}
+                    onClick={() => handleChat(friend)}
+                  >
+
                     <div className="flex items-center space-x-4">
                       <div className="avatar indicator">
                         {onlineUsers.get(friend.receiver._id) ? (
@@ -143,11 +151,14 @@ const handleChat = (friend) => {
                         )}
                         <div className="h-20 w-20 rounded-lg">
                           <img
-                            src={friend?.receiver?.profilePicture
-                              ? `import.meta.env.VITE_URL${friend.receiver.profilePicture}`
-                              : 'https://via.placeholder.com/256'}
+                            src={
+                              friend?.receiver?.profilePicture
+                                ? `${import.meta.env.VITE_URL}${friend.receiver.profilePicture}`
+                                : 'https://via.placeholder.com/256'
+                            }
                             alt={friend?.receiver?.name || 'User'}
                           />
+
                         </div>
                       </div>
                       <div>

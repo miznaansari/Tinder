@@ -5,7 +5,8 @@ import chatingImage from '../assets/chating.png';
 import { useNavigate } from 'react-router';
 
 const Hero = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
@@ -16,7 +17,7 @@ const Hero = () => {
     visible: { transition: { staggerChildren: 0.3 } },
   };
 
-  const FeatureCard = ({ icon: Icon, title, description, color }) => {
+  const FeatureCard = ({ icon: Icon, title, description, accentClass, index }) => {
     const controls = useAnimation();
     const ref = React.useRef(null);
     const inView = useInView(ref);
@@ -30,79 +31,186 @@ const Hero = () => {
     return (
       <motion.div
         ref={ref}
-        className="bg-base-100 text-base-content p-8 rounded-lg shadow-md"
+        className="group relative overflow-hidden rounded-2xl border border-base-300/70 bg-base-100 p-8 text-base-content shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
         initial="hidden"
         animate={controls}
         variants={fadeIn}
+        whileHover={{ y: -6 }}
       >
-        <Icon className={`h-16 w-16 ${color} mb-6`} />
-        <h3 className="text-2xl font-semibold mb-4">{title}</h3>
-        <p>{description}</p>
+        <div className="pointer-events-none absolute right-4 top-4 text-5xl font-black text-base-content/5">
+          0{index}
+        </div>
+
+        <div className={`mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl ${accentClass}`}>
+          <Icon className="h-8 w-8" />
+        </div>
+
+        <h3 className="mb-3 text-xl font-extrabold tracking-tight">{title}</h3>
+        <p className="text-sm leading-7 text-base-content/75">{description}</p>
       </motion.div>
     );
   };
 
+  const features = [
+    {
+      icon: ChatBubbleLeftEllipsisIcon,
+      title: 'Instant Conversations',
+      description: 'Send and receive messages in real time with smooth delivery and clear chat flows.',
+      accentClass: 'bg-cyan-500/15 text-cyan-500',
+    },
+    {
+      icon: UsersIcon,
+      title: 'Global Connections',
+      description: 'Discover people with shared interests and build meaningful friendships worldwide.',
+      accentClass: 'bg-emerald-500/15 text-emerald-500',
+    },
+    {
+      icon: DocumentTextIcon,
+      title: 'Smart Summaries',
+      description: 'Review important conversation highlights quickly with AI assisted summaries.',
+      accentClass: 'bg-amber-500/15 text-amber-500',
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-base-200 text-base-content">
-      {/* Hero Section */}
+    <div className="relative min-h-screen overflow-hidden bg-base-200 text-base-content">
+      <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 top-36 h-72 w-72 rounded-full bg-amber-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-10 left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+
       <motion.div
-        className="container mx-auto flex flex-col-reverse md:flex-row items-center py-15 md:pt-10 md:pb-20"
+        className="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-4 pb-16 pt-10 md:gap-16 md:px-6 md:pb-24 md:pt-16 lg:grid-cols-2"
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
       >
-        <motion.div className="md:w-1/2 text-center md:text-left" variants={fadeIn}>
-          <h1 className="text-2xl md:text-4xl font-bold mb-6">Chat, Connect & Enjoy!</h1>
-          <p className="text-md mb-8">Experience seamless, real-time conversations with people around the world. Make new friends and stay connected effortlessly.</p>
-          <motion.button
-            className="bg-base-100 text-blue-600 px-8 py-3 rounded-full font-semibold"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={()=>navigate('/login')}
+        <motion.div className="text-center md:text-left" variants={fadeIn}>
+          <span className="mb-5 inline-flex rounded-full border border-base-300/70 bg-base-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-base-content/70 shadow-sm">
+            Fast. Secure. Social.
+          </span>
+
+          <h1 className="text-3xl font-black leading-tight md:text-2xl lg:text-5xl">
+            Build Real Connections Through
+            <span className="block bg-gradient-to-r from-cyan-500 via-primary to-amber-500 bg-clip-text text-transparent">
+              Better Conversations
+            </span>
+          </h1>
+
+          <p className="mx-auto mb-8 mt-6 max-w-xl text-base leading-8 text-base-content/75 md:mx-0 md:text-lg">
+            ChatWithFriend gives you a refined messaging experience, a global community to explore,
+            and smart tools that help every conversation feel clear, personal, and engaging.
+          </p>
+
+          <div className="mb-10 flex flex-col items-center gap-3 sm:flex-row md:items-start">
+            <motion.button
+              className="btn h-12 rounded-full border-none bg-primary px-8 text-primary-content shadow-lg shadow-primary/25"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => navigate('/login')}
+            >
+              Get Started
+            </motion.button>
+
+            <motion.button
+              className="btn h-12 rounded-full border border-base-300/70 bg-base-100 px-8 text-base-content shadow-sm"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate('/signup')}
+            >
+              Create Account
+            </motion.button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-base-300/70 bg-base-100 p-4 text-left shadow-sm">
+              <p className="text-2xl font-black text-cyan-500">10K+</p>
+              <p className="text-xs uppercase tracking-wider text-base-content/55">Active Chats Daily</p>
+            </div>
+            <div className="rounded-xl border border-base-300/70 bg-base-100 p-4 text-left shadow-sm">
+              <p className="text-2xl font-black text-emerald-500">95%</p>
+              <p className="text-xs uppercase tracking-wider text-base-content/55">Fast Reply Rate</p>
+            </div>
+            <div className="rounded-xl border border-base-300/70 bg-base-100 p-4 text-left shadow-sm">
+              <p className="text-2xl font-black text-amber-500">120+</p>
+              <p className="text-xs uppercase tracking-wider text-base-content/55">Countries Reached</p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div className="relative mx-auto w-full max-w-lg" variants={fadeIn}>
+          <div className="rounded-3xl border border-base-300/70 bg-base-100 p-4 shadow-2xl">
+            <motion.img
+              src={chatingImage}
+              alt="People chatting together"
+              className="w-full rounded-2xl"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+
+          <motion.div
+            className="absolute -left-4 bottom-6 rounded-xl border border-base-300/70 bg-base-100 px-4 py-3 shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            Get Started
+            <p className="text-xs font-semibold uppercase tracking-wider text-base-content/55">Live Status</p>
+            <p className="text-sm font-bold text-emerald-500">2,300 users online now</p>
+          </motion.div>
+
+          <motion.button
+            className="absolute -right-4 top-6 rounded-xl border border-base-300/70 bg-base-100 px-4 py-3 text-left shadow-lg"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            whileHover={{ scale: 1.03 }}
+            onClick={() => navigate('/search')}
+          >
+            <p className="text-xs font-semibold uppercase tracking-wider text-base-content/55">Discovery</p>
+            <p className="text-sm font-bold">Find new friends now</p>
           </motion.button>
         </motion.div>
-        <motion.div className="w-60  md:w-1/2" variants={fadeIn}>
-          <motion.img src={chatingImage} alt="Chat Illustration" className="rounded-xl" whileHover={{ scale: 1.05 }} />
-        </motion.div>
       </motion.div>
 
-      {/* Features Section */}
-      <motion.div className="container mx-auto py-16" initial="hidden" animate="visible" variants={staggerContainer}>
-        <h2 className="text-4xl font-bold text-center mb-12">Why Choose ChatWithFriend?</h2>
-        <div className="grid md:grid-cols-3 gap-10">
-          <FeatureCard 
-            icon={ChatBubbleLeftEllipsisIcon} 
-            title="Real-Time Chat" 
-            description="Engage in smooth, instant conversations with your friends anytime." 
-            color="text-blue-600" 
-          />
-          <FeatureCard 
-            icon={UsersIcon} 
-            title="Global Community" 
-            description="Expand your social circle and meet people from all over the world." 
-            color="text-purple-600" 
-          />
-          <FeatureCard 
-            icon={DocumentTextIcon} 
-            title="Chat Summary" 
-            description="Generate AI-powered summaries of your conversations for easy review." 
-            color="text-purple-600" 
-          />
+      <motion.section
+        className="relative mx-auto w-full max-w-7xl px-4 pb-16 md:px-6 md:pb-24"
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer}
+      >
+        <div className="mb-12 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-base-content/55">Core Experience</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight md:text-4xl">Why ChatWithFriend Feels Different</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base-content/70">
+            Every part of the platform is designed for comfort, speed, and trust so conversations remain effortless.
+          </p>
         </div>
-      </motion.div>
 
-      {/* Footer Section */}
-      <footer className="bg-base-100 py-12 text-center">
-        <p className="text-gray-500">&copy; 2024 ChatWithFriend. Connect. Chat. Enjoy.</p>
+        <div className="grid gap-6 md:grid-cols-3">
+          {features.map((feature, idx) => (
+            <FeatureCard
+              key={feature.title}
+              icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+              accentClass={feature.accentClass}
+              index={idx + 1}
+            />
+          ))}
+        </div>
+      </motion.section>
+
+      <footer className="border-t border-base-300/60 bg-base-100/95 py-10 text-center">
+        <p className="text-sm text-base-content/60">(c) 2026 ChatWithFriend. Connect. Chat. Enjoy.</p>
         <motion.p
-          className="text-lg font-semibold text-blue-600 mt-4"
+          className="mt-3 text-sm font-semibold uppercase tracking-wider text-primary"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Developed and Designed by Mohd Mizna Ansari
+          Crafted with care by Mohd Mizna Ansari
         </motion.p>
       </footer>
     </div>
